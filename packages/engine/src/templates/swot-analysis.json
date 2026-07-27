@@ -1,0 +1,203 @@
+{
+  "id": "swot-analysis",
+  "name": "SWOT Analysis",
+  "description": "Strategic planning template with strengths, weaknesses, opportunities, and threats in a four-quadrant layout.",
+  "icon": "\ud83c\udfaf",
+  "category": "business",
+  "data": {
+    "page": {
+      "size": "a4",
+      "orientation": "landscape",
+      "bgColor": "#ffffff"
+    },
+    "elements": [
+      {
+        "id": 1,
+        "type": "text",
+        "x": 40,
+        "y": 30,
+        "width": 750,
+        "height": 41,
+        "content": "SWOT Analysis",
+        "fontSize": 22,
+        "fontFamily": "Georgia",
+        "color": "#1a1a1a",
+        "bold": true,
+        "textAlign": "center"
+      },
+      {
+        "id": 2,
+        "type": "text",
+        "x": 40,
+        "y": 60,
+        "width": 750,
+        "height": 24,
+        "content": "[Company / Project Name]  \u2014  [Date]",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#555",
+        "textAlign": "center"
+      },
+      {
+        "id": 3,
+        "type": "shape",
+        "x": 40,
+        "y": 95,
+        "width": 360,
+        "height": 200,
+        "fillColor": "#e8f5e9",
+        "borderColor": "#2d6a4f",
+        "borderWidth": 2,
+        "shapeType": "rect"
+      },
+      {
+        "id": 4,
+        "type": "text",
+        "x": 55,
+        "y": 105,
+        "width": 330,
+        "height": 28,
+        "content": "Strengths",
+        "fontSize": 14,
+        "fontFamily": "Georgia",
+        "color": "#2d6a4f",
+        "bold": true
+      },
+      {
+        "id": 5,
+        "type": "text",
+        "x": 55,
+        "y": 130,
+        "width": 330,
+        "height": 150,
+        "content": "\u2022 [Internal capability that gives advantage]\n\u2022 [Resource or asset stronger than competitors]\n\u2022 [Unique expertise or intellectual property]\n\u2022 [Cost advantage or efficient process]\n\u2022 [Strong brand or reputation]",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#333"
+      },
+      {
+        "id": 6,
+        "type": "shape",
+        "x": 430,
+        "y": 95,
+        "width": 360,
+        "height": 200,
+        "fillColor": "#fce4ec",
+        "borderColor": "#c62828",
+        "borderWidth": 2,
+        "shapeType": "rect"
+      },
+      {
+        "id": 7,
+        "type": "text",
+        "x": 445,
+        "y": 105,
+        "width": 330,
+        "height": 28,
+        "content": "Weaknesses",
+        "fontSize": 14,
+        "fontFamily": "Georgia",
+        "color": "#c62828",
+        "bold": true
+      },
+      {
+        "id": 8,
+        "type": "text",
+        "x": 445,
+        "y": 130,
+        "width": 330,
+        "height": 150,
+        "content": "\u2022 [Internal limitation or gap]\n\u2022 [Resource or capability lacking]\n\u2022 [Process inefficiency]\n\u2022 [Skill gaps in team]\n\u2022 [Brand or market perception issues]",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#333"
+      },
+      {
+        "id": 9,
+        "type": "shape",
+        "x": 40,
+        "y": 320,
+        "width": 360,
+        "height": 200,
+        "fillColor": "#e3f2fd",
+        "borderColor": "#1565c0",
+        "borderWidth": 2,
+        "shapeType": "rect"
+      },
+      {
+        "id": 10,
+        "type": "text",
+        "x": 55,
+        "y": 330,
+        "width": 330,
+        "height": 28,
+        "content": "Opportunities",
+        "fontSize": 14,
+        "fontFamily": "Georgia",
+        "color": "#1565c0",
+        "bold": true
+      },
+      {
+        "id": 11,
+        "type": "text",
+        "x": 55,
+        "y": 355,
+        "width": 330,
+        "height": 150,
+        "content": "\u2022 [Market trend or gap to exploit]\n\u2022 [New technology or partnership]\n\u2022 [Underserved customer segment]\n\u2022 [Regulatory change creating openings]\n\u2022 [Competitor weakness to leverage]",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#333"
+      },
+      {
+        "id": 12,
+        "type": "shape",
+        "x": 430,
+        "y": 320,
+        "width": 360,
+        "height": 200,
+        "fillColor": "#fff3e0",
+        "borderColor": "#e65100",
+        "borderWidth": 2,
+        "shapeType": "rect"
+      },
+      {
+        "id": 13,
+        "type": "text",
+        "x": 445,
+        "y": 330,
+        "width": 330,
+        "height": 28,
+        "content": "Threats",
+        "fontSize": 14,
+        "fontFamily": "Georgia",
+        "color": "#e65100",
+        "bold": true
+      },
+      {
+        "id": 14,
+        "type": "text",
+        "x": 445,
+        "y": 355,
+        "width": 330,
+        "height": 150,
+        "content": "\u2022 [External obstacle or risk]\n\u2022 [Competitor threat or new entrant]\n\u2022 [Market saturation or decline]\n\u2022 [Regulatory or compliance risk]\n\u2022 [Economic or geopolitical factors]",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#333"
+      },
+      {
+        "id": 15,
+        "type": "text",
+        "x": 40,
+        "y": 545,
+        "width": 750,
+        "height": 22,
+        "content": "Strategic Priorities: [List 2-3 key actions emerging from this analysis]",
+        "fontSize": 10,
+        "fontFamily": "Arial",
+        "color": "#888"
+      }
+    ]
+  }
+}

@@ -1,0 +1,197 @@
+{
+  "id": "cover-letter",
+  "name": "Cover Letter",
+  "description": "Elegant cover letter with modern layout, suitable for job applications.",
+  "icon": "\u270d\ufe0f",
+  "category": "business",
+  "data": {
+    "page": {
+      "size": "a4",
+      "orientation": "portrait"
+    },
+    "elements": [
+      {
+        "id": 1,
+        "type": "text",
+        "x": 60,
+        "y": 40,
+        "width": 300,
+        "height": 37,
+        "content": "[Your Name]",
+        "fontSize": 20,
+        "fontFamily": "Georgia",
+        "color": "#1a1a1a",
+        "bold": true
+      },
+      {
+        "id": 2,
+        "type": "text",
+        "x": 60,
+        "y": 70,
+        "width": 250,
+        "height": 22,
+        "content": "[Phone]  |  [email@example.com]",
+        "fontSize": 10,
+        "fontFamily": "Arial",
+        "color": "#1677ff"
+      },
+      {
+        "id": 3,
+        "type": "text",
+        "x": 60,
+        "y": 88,
+        "width": 250,
+        "height": 22,
+        "content": "[LinkedIn URL]  |  [Portfolio URL]",
+        "fontSize": 10,
+        "fontFamily": "Arial",
+        "color": "#1677ff"
+      },
+      {
+        "id": 4,
+        "type": "shape",
+        "x": 60,
+        "y": 112,
+        "width": 475,
+        "height": 1,
+        "borderColor": "#d0d5dd",
+        "borderWidth": 1,
+        "shapeType": "line"
+      },
+      {
+        "id": 5,
+        "type": "text",
+        "x": 60,
+        "y": 130,
+        "width": 250,
+        "height": 24,
+        "content": "[Date]",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#555"
+      },
+      {
+        "id": 6,
+        "type": "text",
+        "x": 60,
+        "y": 160,
+        "width": 300,
+        "height": 24,
+        "content": "Hiring Manager",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#333"
+      },
+      {
+        "id": 7,
+        "type": "text",
+        "x": 60,
+        "y": 176,
+        "width": 300,
+        "height": 24,
+        "content": "[Company Name]",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#333"
+      },
+      {
+        "id": 8,
+        "type": "text",
+        "x": 60,
+        "y": 192,
+        "width": 300,
+        "height": 24,
+        "content": "[Company Address]",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#333"
+      },
+      {
+        "id": 9,
+        "type": "text",
+        "x": 60,
+        "y": 225,
+        "width": 475,
+        "height": 25,
+        "content": "Re: Application for [Position] Position",
+        "fontSize": 12,
+        "fontFamily": "Arial",
+        "color": "#1a1a1a",
+        "bold": true
+      },
+      {
+        "id": 10,
+        "type": "text",
+        "x": 60,
+        "y": 255,
+        "width": 475,
+        "height": 24,
+        "content": "Dear Hiring Manager,",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#333"
+      },
+      {
+        "id": 11,
+        "type": "text",
+        "x": 60,
+        "y": 285,
+        "width": 475,
+        "height": 60,
+        "content": "I am writing to express my strong interest in the [Position] role at [Company Name]. With [X] years of experience in [field/industry], I am confident that my skills and passion make me an excellent fit for your team.",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#444"
+      },
+      {
+        "id": 12,
+        "type": "text",
+        "x": 60,
+        "y": 360,
+        "width": 475,
+        "height": 80,
+        "content": "In my current role at [Current Company], I have [key achievement 1 \u2014 e.g., led a team of X to deliver Y result]. I also [achievement 2 \u2014 e.g., implemented a system that reduced costs by X%]. These experiences have equipped me with the skills necessary to excel in this role.\n\nI am particularly drawn to [Company Name] because [reason \u2014 e.g., your innovative approach to X]. I share your values of [value 1] and [value 2], and I am eager to contribute to your continued success.",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#444"
+      },
+      {
+        "id": 13,
+        "type": "text",
+        "x": 60,
+        "y": 475,
+        "width": 475,
+        "height": 40,
+        "content": "I would welcome the opportunity to discuss how my background and skills align with the needs of your team. Thank you for your time and consideration.",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#444"
+      },
+      {
+        "id": 14,
+        "type": "text",
+        "x": 60,
+        "y": 535,
+        "width": 475,
+        "height": 25,
+        "content": "Sincerely,",
+        "fontSize": 12,
+        "fontFamily": "Arial",
+        "color": "#333"
+      },
+      {
+        "id": 15,
+        "type": "text",
+        "x": 60,
+        "y": 565,
+        "width": 250,
+        "height": 31,
+        "content": "[Your Name]",
+        "fontSize": 16,
+        "fontFamily": "Georgia",
+        "color": "#1a1a1a",
+        "bold": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,248 @@
+{
+  "id": "consulting-sow",
+  "name": "Consulting SOW",
+  "description": "Statement of work with scope, deliverables timeline, and commercial terms for consulting engagements.",
+  "icon": "\ud83d\udccb",
+  "category": "business",
+  "data": {
+    "page": {
+      "size": "a4",
+      "orientation": "portrait"
+    },
+    "elements": [
+      {
+        "id": 1,
+        "type": "text",
+        "x": 48,
+        "y": 40,
+        "width": 360,
+        "height": 40,
+        "content": "Statement of Work",
+        "fontSize": 24,
+        "fontFamily": "Georgia",
+        "color": "#1a1a1a",
+        "bold": true
+      },
+      {
+        "id": 2,
+        "type": "text",
+        "x": 400,
+        "y": 48,
+        "width": 147,
+        "height": 24,
+        "content": "SOW #[Number]",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#1677ff",
+        "textAlign": "right",
+        "bold": true
+      },
+      {
+        "id": 3,
+        "type": "text",
+        "x": 48,
+        "y": 82,
+        "width": 499,
+        "height": 24,
+        "content": "Client: [Client Name]  \u00b7  Provider: [Your Firm]  \u00b7  Effective: [Date]",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#555"
+      },
+      {
+        "id": 4,
+        "type": "shape",
+        "x": 48,
+        "y": 108,
+        "width": 499,
+        "height": 1,
+        "borderColor": "#d0d5dd",
+        "borderWidth": 1,
+        "shapeType": "line"
+      },
+      {
+        "id": 5,
+        "type": "text",
+        "x": 48,
+        "y": 124,
+        "width": 499,
+        "height": 26,
+        "content": "1. OBJECTIVE",
+        "fontSize": 12,
+        "fontFamily": "Arial",
+        "color": "#1a1a1a",
+        "bold": true
+      },
+      {
+        "id": 6,
+        "type": "text",
+        "x": 48,
+        "y": 148,
+        "width": 499,
+        "height": 48,
+        "content": "Provider will deliver [engagement outcome] for Client, including discovery, implementation, and knowledge transfer over [X] weeks.",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#333"
+      },
+      {
+        "id": 7,
+        "type": "text",
+        "x": 48,
+        "y": 208,
+        "width": 499,
+        "height": 26,
+        "content": "2. DELIVERABLES & TIMELINE",
+        "fontSize": 12,
+        "fontFamily": "Arial",
+        "color": "#1a1a1a",
+        "bold": true
+      },
+      {
+        "id": 8,
+        "type": "table",
+        "x": 48,
+        "y": 234,
+        "width": 499,
+        "height": 150,
+        "rows": 5,
+        "cols": 4,
+        "headerRows": 1,
+        "borderColor": "#d0d5dd",
+        "borderWidth": 1,
+        "cellPadding": 6,
+        "colWidths": [
+          140,
+          180,
+          90,
+          89
+        ],
+        "cells": [
+          [
+            {
+              "content": "Phase",
+              "bold": true
+            },
+            {
+              "content": "Deliverable",
+              "bold": true
+            },
+            {
+              "content": "Due",
+              "bold": true
+            },
+            {
+              "content": "Owner",
+              "bold": true
+            }
+          ],
+          [
+            {
+              "content": "Discovery"
+            },
+            {
+              "content": "Current-state assessment"
+            },
+            {
+              "content": "Week 1"
+            },
+            {
+              "content": "Provider"
+            }
+          ],
+          [
+            {
+              "content": "Design"
+            },
+            {
+              "content": "Solution architecture doc"
+            },
+            {
+              "content": "Week 2"
+            },
+            {
+              "content": "Provider"
+            }
+          ],
+          [
+            {
+              "content": "Build"
+            },
+            {
+              "content": "Implementation & QA"
+            },
+            {
+              "content": "Week 3-4"
+            },
+            {
+              "content": "Provider"
+            }
+          ],
+          [
+            {
+              "content": "Handoff"
+            },
+            {
+              "content": "Training & documentation"
+            },
+            {
+              "content": "Week 5"
+            },
+            {
+              "content": "Joint"
+            }
+          ]
+        ]
+      },
+      {
+        "id": 9,
+        "type": "text",
+        "x": 48,
+        "y": 400,
+        "width": 499,
+        "height": 26,
+        "content": "3. COMMERCIAL TERMS",
+        "fontSize": 12,
+        "fontFamily": "Arial",
+        "color": "#1a1a1a",
+        "bold": true
+      },
+      {
+        "id": 10,
+        "type": "text",
+        "x": 48,
+        "y": 424,
+        "width": 499,
+        "height": 56,
+        "content": "Fixed fee: $[Amount]  \u00b7  Payment: 40% on signing, 40% at midpoint, 20% on completion.<br>Expenses: Pre-approved travel billed at cost. Change requests scoped separately.",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#333"
+      },
+      {
+        "id": 11,
+        "type": "text",
+        "x": 48,
+        "y": 500,
+        "width": 240,
+        "height": 24,
+        "content": "Client: _________________________",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#555"
+      },
+      {
+        "id": 12,
+        "type": "text",
+        "x": 307,
+        "y": 500,
+        "width": 240,
+        "height": 24,
+        "content": "Provider: _________________________",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#555"
+      }
+    ]
+  }
+}

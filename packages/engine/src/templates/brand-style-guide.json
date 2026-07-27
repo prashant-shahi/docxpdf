@@ -1,0 +1,292 @@
+{
+  "id": "brand-style-guide",
+  "name": "Brand Style Guide",
+  "description": "Premium brand guidelines with color palette, typography specs, and logo usage rules.",
+  "icon": "\ud83c\udfa8",
+  "category": "creative",
+  "data": {
+    "page": {
+      "size": "a4",
+      "orientation": "portrait",
+      "bgColor": "#ffffff"
+    },
+    "elements": [
+      {
+        "id": 1,
+        "type": "text",
+        "x": 48,
+        "y": 44,
+        "width": 400,
+        "height": 40,
+        "content": "Brand Style Guide",
+        "fontSize": 26,
+        "fontFamily": "Georgia",
+        "color": "#111827",
+        "bold": true
+      },
+      {
+        "id": 2,
+        "type": "text",
+        "x": 48,
+        "y": 82,
+        "width": 400,
+        "height": 24,
+        "content": "[Brand Name] \u00b7 Version 1.0 \u00b7 [Date]",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#6b7280"
+      },
+      {
+        "id": 3,
+        "type": "shape",
+        "x": 48,
+        "y": 112,
+        "width": 499,
+        "height": 1,
+        "borderColor": "#e5e7eb",
+        "borderWidth": 1,
+        "shapeType": "line"
+      },
+      {
+        "id": 4,
+        "type": "text",
+        "x": 48,
+        "y": 128,
+        "width": 200,
+        "height": 26,
+        "content": "COLOR PALETTE",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#111827",
+        "bold": true
+      },
+      {
+        "id": 5,
+        "type": "shape",
+        "x": 48,
+        "y": 158,
+        "width": 72,
+        "height": 72,
+        "fillColor": "#111827",
+        "borderWidth": 0,
+        "shapeType": "rect"
+      },
+      {
+        "id": 6,
+        "type": "shape",
+        "x": 132,
+        "y": 158,
+        "width": 72,
+        "height": 72,
+        "fillColor": "#6366f1",
+        "borderWidth": 0,
+        "shapeType": "rect"
+      },
+      {
+        "id": 7,
+        "type": "shape",
+        "x": 216,
+        "y": 158,
+        "width": 72,
+        "height": 72,
+        "fillColor": "#f59e0b",
+        "borderWidth": 0,
+        "shapeType": "rect"
+      },
+      {
+        "id": 8,
+        "type": "shape",
+        "x": 300,
+        "y": 158,
+        "width": 72,
+        "height": 72,
+        "fillColor": "#f3f4f6",
+        "borderColor": "#e5e7eb",
+        "borderWidth": 1,
+        "shapeType": "rect"
+      },
+      {
+        "id": 9,
+        "type": "text",
+        "x": 48,
+        "y": 238,
+        "width": 72,
+        "height": 22,
+        "content": "Primary",
+        "fontSize": 9,
+        "fontFamily": "Arial",
+        "color": "#6b7280",
+        "textAlign": "center"
+      },
+      {
+        "id": 10,
+        "type": "text",
+        "x": 132,
+        "y": 238,
+        "width": 72,
+        "height": 22,
+        "content": "Accent",
+        "fontSize": 9,
+        "fontFamily": "Arial",
+        "color": "#6b7280",
+        "textAlign": "center"
+      },
+      {
+        "id": 11,
+        "type": "text",
+        "x": 216,
+        "y": 238,
+        "width": 72,
+        "height": 22,
+        "content": "Highlight",
+        "fontSize": 9,
+        "fontFamily": "Arial",
+        "color": "#6b7280",
+        "textAlign": "center"
+      },
+      {
+        "id": 12,
+        "type": "text",
+        "x": 300,
+        "y": 238,
+        "width": 72,
+        "height": 22,
+        "content": "Surface",
+        "fontSize": 9,
+        "fontFamily": "Arial",
+        "color": "#6b7280",
+        "textAlign": "center"
+      },
+      {
+        "id": 13,
+        "type": "text",
+        "x": 48,
+        "y": 278,
+        "width": 200,
+        "height": 26,
+        "content": "TYPOGRAPHY",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#111827",
+        "bold": true
+      },
+      {
+        "id": 14,
+        "type": "table",
+        "x": 48,
+        "y": 304,
+        "width": 499,
+        "height": 120,
+        "rows": 4,
+        "cols": 3,
+        "headerRows": 1,
+        "borderColor": "#e5e7eb",
+        "borderWidth": 1,
+        "cellPadding": 8,
+        "colWidths": [
+          140,
+          180,
+          179
+        ],
+        "cells": [
+          [
+            {
+              "content": "Role",
+              "bold": true
+            },
+            {
+              "content": "Typeface",
+              "bold": true
+            },
+            {
+              "content": "Usage",
+              "bold": true
+            }
+          ],
+          [
+            {
+              "content": "Display"
+            },
+            {
+              "content": "Georgia"
+            },
+            {
+              "content": "Headlines, hero titles"
+            }
+          ],
+          [
+            {
+              "content": "Body"
+            },
+            {
+              "content": "Arial"
+            },
+            {
+              "content": "Paragraphs, UI labels"
+            }
+          ],
+          [
+            {
+              "content": "Caption"
+            },
+            {
+              "content": "Arial 10px"
+            },
+            {
+              "content": "Metadata, footnotes"
+            }
+          ]
+        ]
+      },
+      {
+        "id": 15,
+        "type": "text",
+        "x": 48,
+        "y": 442,
+        "width": 200,
+        "height": 26,
+        "content": "LOGO USAGE",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#111827",
+        "bold": true
+      },
+      {
+        "id": 16,
+        "type": "text",
+        "x": 48,
+        "y": 468,
+        "width": 499,
+        "height": 72,
+        "content": "\u2022 Maintain clear space equal to the height of the logomark on all sides.<br>\u2022 Minimum print size: 24mm wide. Minimum digital size: 80px.<br>\u2022 Do not stretch, rotate, or place on busy photography without a scrim.<br>\u2022 Use full-color on light backgrounds; reversed white on dark.",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#374151"
+      },
+      {
+        "id": 17,
+        "type": "shape",
+        "x": 48,
+        "y": 560,
+        "width": 499,
+        "height": 1,
+        "borderColor": "#e5e7eb",
+        "borderWidth": 1,
+        "shapeType": "line"
+      },
+      {
+        "id": 18,
+        "type": "text",
+        "x": 48,
+        "y": 576,
+        "width": 499,
+        "height": 22,
+        "content": "Questions? brand@[company].com",
+        "fontSize": 10,
+        "fontFamily": "Arial",
+        "color": "#9ca3af",
+        "textAlign": "center"
+      }
+    ]
+  }
+}

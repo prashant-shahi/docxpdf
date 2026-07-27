@@ -1,0 +1,188 @@
+{
+  "id": "case-study",
+  "name": "Case Study",
+  "description": "Professional case study with challenge, solution, results, and client quote.",
+  "icon": "\ud83d\udcca",
+  "category": "marketing",
+  "data": {
+    "page": {
+      "size": "a4",
+      "orientation": "portrait"
+    },
+    "elements": [
+      {
+        "id": 1,
+        "type": "text",
+        "x": 60,
+        "y": 35,
+        "width": 475,
+        "height": 41,
+        "content": "Case Study: [Client Name]",
+        "fontSize": 22,
+        "fontFamily": "Georgia",
+        "color": "#1a1a1a",
+        "bold": true
+      },
+      {
+        "id": 2,
+        "type": "text",
+        "x": 60,
+        "y": 66,
+        "width": 475,
+        "height": 25,
+        "content": "How [Company Name] helped [Client] achieve [Key Result]",
+        "fontSize": 12,
+        "fontFamily": "Arial",
+        "color": "#1677ff"
+      },
+      {
+        "id": 3,
+        "type": "shape",
+        "x": 60,
+        "y": 90,
+        "width": 475,
+        "height": 1,
+        "borderColor": "#d0d5dd",
+        "borderWidth": 1,
+        "shapeType": "line"
+      },
+      {
+        "id": 4,
+        "type": "text",
+        "x": 60,
+        "y": 108,
+        "width": 475,
+        "height": 27,
+        "content": "Executive Summary",
+        "fontSize": 13,
+        "fontFamily": "Georgia",
+        "color": "#1a1a1a",
+        "bold": true
+      },
+      {
+        "id": 5,
+        "type": "text",
+        "x": 60,
+        "y": 130,
+        "width": 475,
+        "height": 50,
+        "content": "[Client Name] is a [industry] company facing [key challenge]. They partnered with [Company Name] to [solution], resulting in [key outcome] within [timeframe]. This case study outlines the challenge, our approach, and the measurable results delivered.",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#444"
+      },
+      {
+        "id": 6,
+        "type": "text",
+        "x": 60,
+        "y": 205,
+        "width": 475,
+        "height": 27,
+        "content": "The Challenge",
+        "fontSize": 13,
+        "fontFamily": "Georgia",
+        "color": "#1a1a1a",
+        "bold": true
+      },
+      {
+        "id": 7,
+        "type": "text",
+        "x": 60,
+        "y": 227,
+        "width": 475,
+        "height": 80,
+        "content": "[Describe the client's situation before engaging your services. What specific problems were they facing? What had they tried before? What was at stake if the problem wasn't solved?]\n\nKey challenges included:",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#444"
+      },
+      {
+        "id": 8,
+        "type": "text",
+        "x": 75,
+        "y": 315,
+        "width": 445,
+        "height": 60,
+        "content": "\u2022 [Challenge 1 \u2014 specific pain point]\n\u2022 [Challenge 2 \u2014 specific pain point]\n\u2022 [Challenge 3 \u2014 specific pain point]",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#555"
+      },
+      {
+        "id": 9,
+        "type": "text",
+        "x": 60,
+        "y": 380,
+        "width": 475,
+        "height": 27,
+        "content": "Our Solution",
+        "fontSize": 13,
+        "fontFamily": "Georgia",
+        "color": "#1a1a1a",
+        "bold": true
+      },
+      {
+        "id": 10,
+        "type": "text",
+        "x": 60,
+        "y": 402,
+        "width": 475,
+        "height": 80,
+        "content": "[Describe the solution implemented. What approach did you take? Why was this the right approach? What made your solution unique or particularly effective? Include any relevant methodology, technology, or process details.]",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#444"
+      },
+      {
+        "id": 11,
+        "type": "text",
+        "x": 60,
+        "y": 510,
+        "width": 475,
+        "height": 27,
+        "content": "The Results",
+        "fontSize": 13,
+        "fontFamily": "Georgia",
+        "color": "#1a1a1a",
+        "bold": true
+      },
+      {
+        "id": 12,
+        "type": "text",
+        "x": 60,
+        "y": 532,
+        "width": 475,
+        "height": 114,
+        "content": "Quantifiable outcomes achieved:\n\n\u2022 [Metric 1] improved by [X]% \u2014 from [before] to [after]\n\u2022 [Metric 2] increased by [X]% \u2014 [details]\n\u2022 [Metric 3] reduced by [X]% \u2014 saving [$X]\n\u2022 [Qualitative outcome \u2014 e.g., customer satisfaction, team morale]",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#444"
+      },
+      {
+        "id": 13,
+        "type": "text",
+        "x": 60,
+        "y": 640,
+        "width": 475,
+        "height": 30,
+        "content": "\"[Quote from client expressing satisfaction with the results and partnership.]\"",
+        "fontSize": 12,
+        "fontFamily": "Georgia",
+        "color": "#555",
+        "italic": true
+      },
+      {
+        "id": 14,
+        "type": "text",
+        "x": 60,
+        "y": 675,
+        "width": 300,
+        "height": 22,
+        "content": "\u2014 [Client Name], [Title] at [Company]",
+        "fontSize": 10,
+        "fontFamily": "Arial",
+        "color": "#888"
+      }
+    ]
+  }
+}

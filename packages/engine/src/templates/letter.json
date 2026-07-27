@@ -1,0 +1,208 @@
+{
+  "id": "letter",
+  "name": "Business Letter",
+  "description": "A clean, professional letter format with sender info, date, salutation, body, and signature block.",
+  "icon": "✉️",
+  "category": "business",
+  "data": {
+    "page": {
+      "size": "a4"
+    },
+    "elements": [
+      {
+        "id": 1,
+        "type": "text",
+        "x": 60,
+        "y": 40,
+        "width": 200,
+        "height": 28,
+        "content": "John Doe",
+        "fontSize": 14,
+        "fontFamily": "Arial",
+        "color": "#1a1a1a",
+        "bold": true
+      },
+      {
+        "id": 2,
+        "type": "text",
+        "x": 60,
+        "y": 62,
+        "width": 200,
+        "height": 24,
+        "content": "123 Business Street",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#555"
+      },
+      {
+        "id": 3,
+        "type": "text",
+        "x": 60,
+        "y": 80,
+        "width": 200,
+        "height": 24,
+        "content": "City, State 12345",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#555"
+      },
+      {
+        "id": 4,
+        "type": "text",
+        "x": 60,
+        "y": 98,
+        "width": 200,
+        "height": 24,
+        "content": "[email@example.com]",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#1677ff"
+      },
+      {
+        "id": 5,
+        "type": "text",
+        "x": 60,
+        "y": 130,
+        "width": 150,
+        "height": 24,
+        "content": "March 15, 2025",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#555"
+      },
+      {
+        "id": 6,
+        "type": "text",
+        "x": 60,
+        "y": 162,
+        "width": 300,
+        "height": 24,
+        "content": "Alice",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#1a1a1a",
+        "bold": true
+      },
+      {
+        "id": 7,
+        "type": "text",
+        "x": 60,
+        "y": 180,
+        "width": 300,
+        "height": 24,
+        "content": "[Company Name]",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#555"
+      },
+      {
+        "id": 8,
+        "type": "text",
+        "x": 60,
+        "y": 198,
+        "width": 300,
+        "height": 24,
+        "content": "456 Corporate Ave, Suite 200",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#555"
+      },
+      {
+        "id": 9,
+        "type": "text",
+        "x": 60,
+        "y": 216,
+        "width": 300,
+        "height": 24,
+        "content": "City, State 67890",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#555"
+      },
+      {
+        "id": 10,
+        "type": "text",
+        "x": 60,
+        "y": 250,
+        "width": 100,
+        "height": 25,
+        "content": "Dear Alice,",
+        "fontSize": 12,
+        "fontFamily": "Arial",
+        "color": "#1a1a1a"
+      },
+      {
+        "id": 11,
+        "type": "text",
+        "x": 60,
+        "y": 285,
+        "width": 475,
+        "height": 60,
+        "content": "I am writing to express my interest in the position of [Position Name] at [Company Name]. With over five years of experience in the industry, I believe my skills and expertise align perfectly with the requirements of this role.\n\nDuring my previous role at [Previous Company], I successfully led a team of [Number] professionals and delivered [Key Achievement] that resulted in a [X]% increase in [Metric].",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#333"
+      },
+      {
+        "id": 12,
+        "type": "text",
+        "x": 60,
+        "y": 370,
+        "width": 475,
+        "height": 80,
+        "content": "I have attached my resume for your review and would welcome the opportunity to discuss how my background and skills would be an asset to your team. I am available for an interview at your earliest convenience and can be reached at [Phone] or via email.",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#333"
+      },
+      {
+        "id": 13,
+        "type": "text",
+        "x": 60,
+        "y": 475,
+        "width": 475,
+        "height": 24,
+        "content": "Thank you for your time and consideration.",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#333"
+      },
+      {
+        "id": 14,
+        "type": "text",
+        "x": 60,
+        "y": 510,
+        "width": 200,
+        "height": 25,
+        "content": "Sincerely,",
+        "fontSize": 12,
+        "fontFamily": "Arial",
+        "color": "#1a1a1a"
+      },
+      {
+        "id": 15,
+        "type": "text",
+        "x": 60,
+        "y": 545,
+        "width": 200,
+        "height": 28,
+        "content": "John Doe",
+        "fontSize": 14,
+        "fontFamily": "Georgia",
+        "color": "#1a1a1a",
+        "bold": true
+      },
+      {
+        "id": 16,
+        "type": "shape",
+        "x": 60,
+        "y": 118,
+        "width": 72,
+        "height": 2,
+        "borderColor": "#1677ff",
+        "borderWidth": 2,
+        "shapeType": "line"
+      }
+    ]
+  }
+}

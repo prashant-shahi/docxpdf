@@ -1,0 +1,187 @@
+{
+  "id": "certificate",
+  "name": "Certificate of Achievement",
+  "description": "An elegant certificate template with decorative border, title, recipient name, and signature lines.",
+  "icon": "🏆",
+  "category": "other",
+  "data": {
+    "page": {
+      "size": "a4"
+    },
+    "elements": [
+      {
+        "id": 1,
+        "type": "shape",
+        "x": 20,
+        "y": 20,
+        "width": 555,
+        "height": 802,
+        "fillColor": "#faf8f5",
+        "borderColor": "#c9a94e",
+        "borderWidth": 3,
+        "shapeType": "rect"
+      },
+      {
+        "id": 2,
+        "type": "shape",
+        "x": 30,
+        "y": 30,
+        "width": 535,
+        "height": 782,
+        "fillColor": "transparent",
+        "borderColor": "#c9a94e",
+        "borderWidth": 1,
+        "shapeType": "rect"
+      },
+      {
+        "id": 3,
+        "type": "shape",
+        "x": 140,
+        "y": 110,
+        "width": 315,
+        "height": 2,
+        "borderColor": "#c9a94e",
+        "borderWidth": 1,
+        "shapeType": "line"
+      },
+      {
+        "id": 4,
+        "type": "text",
+        "x": 100,
+        "y": 130,
+        "width": 395,
+        "height": 28,
+        "content": "Certificate of Achievement",
+        "fontSize": 14,
+        "fontFamily": "Georgia",
+        "color": "#c9a94e",
+        "textAlign": "center"
+      },
+      {
+        "id": 5,
+        "type": "shape",
+        "x": 140,
+        "y": 160,
+        "width": 315,
+        "height": 2,
+        "borderColor": "#c9a94e",
+        "borderWidth": 1,
+        "shapeType": "line"
+      },
+      {
+        "id": 6,
+        "type": "text",
+        "x": 50,
+        "y": 200,
+        "width": 495,
+        "height": 27,
+        "content": "This certificate is proudly presented to",
+        "fontSize": 13,
+        "fontFamily": "Georgia",
+        "color": "#666",
+        "textAlign": "center"
+      },
+      {
+        "id": 7,
+        "type": "text",
+        "x": 50,
+        "y": 240,
+        "width": 495,
+        "height": 68,
+        "content": "John Doe",
+        "fontSize": 40,
+        "fontFamily": "Georgia",
+        "color": "#1a1a1a",
+        "bold": true,
+        "textAlign": "center"
+      },
+      {
+        "id": 8,
+        "type": "text",
+        "x": 50,
+        "y": 310,
+        "width": 495,
+        "height": 48,
+        "content": "For successfully completing the Advanced Program\nand demonstrating outstanding performance.",
+        "fontSize": 13,
+        "fontFamily": "Georgia",
+        "color": "#555",
+        "textAlign": "center"
+      },
+      {
+        "id": 9,
+        "type": "text",
+        "x": 50,
+        "y": 380,
+        "width": 495,
+        "height": 25,
+        "content": "Awarded on March 15, 2025",
+        "fontSize": 12,
+        "fontFamily": "Georgia",
+        "color": "#888",
+        "textAlign": "center"
+      },
+      {
+        "id": 10,
+        "type": "shape",
+        "x": 100,
+        "y": 560,
+        "width": 180,
+        "height": 1,
+        "borderColor": "#333",
+        "borderWidth": 1,
+        "shapeType": "line"
+      },
+      {
+        "id": 11,
+        "type": "text",
+        "x": 100,
+        "y": 568,
+        "width": 180,
+        "height": 24,
+        "content": "Authorized Signature",
+        "fontSize": 11,
+        "fontFamily": "Georgia",
+        "color": "#666",
+        "textAlign": "center"
+      },
+      {
+        "id": 12,
+        "type": "shape",
+        "x": 315,
+        "y": 560,
+        "width": 180,
+        "height": 1,
+        "borderColor": "#333",
+        "borderWidth": 1,
+        "shapeType": "line"
+      },
+      {
+        "id": 13,
+        "type": "text",
+        "x": 315,
+        "y": 568,
+        "width": 180,
+        "height": 24,
+        "content": "Date",
+        "fontSize": 11,
+        "fontFamily": "Georgia",
+        "color": "#666",
+        "textAlign": "center"
+      },
+      {
+        "id": 14,
+        "type": "text",
+        "x": 50,
+        "y": 650,
+        "width": 495,
+        "height": 22,
+        "content": "Certificate ID: CERT-2025-XXXX",
+        "fontSize": 10,
+        "fontFamily": "Arial",
+        "color": "#999",
+        "textAlign": "center"
+      }
+    ]
+  }
+}

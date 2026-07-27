@@ -1,0 +1,313 @@
+{
+  "id": "timesheet",
+  "name": "Weekly Timesheet",
+  "description": "Organized weekly timesheet with day-by-day entries, project tracking, and total hours.",
+  "icon": "\u23f1\ufe0f",
+  "category": "business",
+  "data": {
+    "page": {
+      "size": "a4",
+      "orientation": "portrait"
+    },
+    "elements": [
+      {
+        "id": 1,
+        "type": "text",
+        "x": 60,
+        "y": 40,
+        "width": 300,
+        "height": 34,
+        "content": "Employee Timesheet",
+        "fontSize": 18,
+        "fontFamily": "Georgia",
+        "color": "#1a1a1a",
+        "bold": true
+      },
+      {
+        "id": 2,
+        "type": "text",
+        "x": 380,
+        "y": 44,
+        "width": 155,
+        "height": 24,
+        "content": "Week Ending: [Date]",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#555",
+        "textAlign": "right"
+      },
+      {
+        "id": 3,
+        "type": "shape",
+        "x": 60,
+        "y": 70,
+        "width": 475,
+        "height": 1,
+        "borderColor": "#d0d5dd",
+        "borderWidth": 1,
+        "shapeType": "line"
+      },
+      {
+        "id": 4,
+        "type": "text",
+        "x": 60,
+        "y": 86,
+        "width": 200,
+        "height": 24,
+        "content": "Employee: [Name]",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#333"
+      },
+      {
+        "id": 5,
+        "type": "text",
+        "x": 310,
+        "y": 86,
+        "width": 225,
+        "height": 24,
+        "content": "Manager: [Name]",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#333",
+        "textAlign": "right"
+      },
+      {
+        "id": 6,
+        "type": "text",
+        "x": 60,
+        "y": 104,
+        "width": 200,
+        "height": 24,
+        "content": "Department: [Department]",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#333"
+      },
+      {
+        "id": 7,
+        "type": "table",
+        "x": 60,
+        "y": 130,
+        "width": 475,
+        "height": 210,
+        "rows": 6,
+        "cols": 5,
+        "headerRows": 1,
+        "borderColor": "#d0d5dd",
+        "borderWidth": 1,
+        "cellPadding": 6,
+        "colWidths": [
+          72,
+          88,
+          100,
+          145,
+          70
+        ],
+        "cells": [
+          [
+            {
+              "content": "Day",
+              "bold": true
+            },
+            {
+              "content": "Date",
+              "bold": true
+            },
+            {
+              "content": "Project",
+              "bold": true
+            },
+            {
+              "content": "Description",
+              "bold": true
+            },
+            {
+              "content": "Hours",
+              "bold": true,
+              "textAlign": "right"
+            }
+          ],
+          [
+            {
+              "content": "Monday"
+            },
+            {
+              "content": "[Date]"
+            },
+            {
+              "content": "[Project name]"
+            },
+            {
+              "content": "[Task description]"
+            },
+            {
+              "content": "[X.X]",
+              "textAlign": "right"
+            }
+          ],
+          [
+            {
+              "content": "Tuesday"
+            },
+            {
+              "content": "[Date]"
+            },
+            {
+              "content": "[Project name]"
+            },
+            {
+              "content": "[Task description]"
+            },
+            {
+              "content": "[X.X]",
+              "textAlign": "right"
+            }
+          ],
+          [
+            {
+              "content": "Wednesday"
+            },
+            {
+              "content": "[Date]"
+            },
+            {
+              "content": "[Project name]"
+            },
+            {
+              "content": "[Task description]"
+            },
+            {
+              "content": "[X.X]",
+              "textAlign": "right"
+            }
+          ],
+          [
+            {
+              "content": "Thursday"
+            },
+            {
+              "content": "[Date]"
+            },
+            {
+              "content": "[Project name]"
+            },
+            {
+              "content": "[Task description]"
+            },
+            {
+              "content": "[X.X]",
+              "textAlign": "right"
+            }
+          ],
+          [
+            {
+              "content": "Friday"
+            },
+            {
+              "content": "[Date]"
+            },
+            {
+              "content": "[Project name]"
+            },
+            {
+              "content": "[Task description]"
+            },
+            {
+              "content": "[X.X]",
+              "textAlign": "right"
+            }
+          ]
+        ]
+      },
+      {
+        "id": 8,
+        "type": "text",
+        "x": 340,
+        "y": 355,
+        "width": 95,
+        "height": 26,
+        "content": "Total Hours:",
+        "fontSize": 12,
+        "fontFamily": "Arial",
+        "color": "#1a1a1a",
+        "bold": true,
+        "textAlign": "right"
+      },
+      {
+        "id": 9,
+        "type": "text",
+        "x": 450,
+        "y": 355,
+        "width": 75,
+        "height": 26,
+        "content": "[XX.X]",
+        "fontSize": 12,
+        "fontFamily": "Arial",
+        "color": "#1677ff",
+        "bold": true,
+        "textAlign": "right"
+      },
+      {
+        "id": 10,
+        "type": "text",
+        "x": 60,
+        "y": 390,
+        "width": 475,
+        "height": 24,
+        "content": "Overtime: [X.X] hours  |  Notes: [Additional comments]",
+        "fontSize": 10,
+        "fontFamily": "Arial",
+        "color": "#888"
+      },
+      {
+        "id": 11,
+        "type": "text",
+        "x": 60,
+        "y": 425,
+        "width": 220,
+        "height": 24,
+        "content": "Employee Signature: ____________________",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#555"
+      },
+      {
+        "id": 12,
+        "type": "text",
+        "x": 60,
+        "y": 445,
+        "width": 220,
+        "height": 24,
+        "content": "Date: ______________",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#555"
+      },
+      {
+        "id": 13,
+        "type": "text",
+        "x": 310,
+        "y": 425,
+        "width": 220,
+        "height": 24,
+        "content": "Manager Signature: ____________________",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#555"
+      },
+      {
+        "id": 14,
+        "type": "text",
+        "x": 310,
+        "y": 445,
+        "width": 220,
+        "height": 24,
+        "content": "Date: ______________",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#555"
+      }
+    ]
+  }
+}

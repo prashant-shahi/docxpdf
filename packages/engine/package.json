@@ -1,0 +1,23 @@
+{
+  "name": "@docxpdf/engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "validate-templates": "node scripts/validate-templates.mjs",
+    "validate-templates:core": "node scripts/validate-templates.mjs --core-only",
+    "validate-templates:free": "node scripts/validate-templates.mjs --core-only"
+  },
+  "dependencies": {
+    "jszip": "^3.10.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.2",
+    "vitest": "^3.1.1"
+  }
+}

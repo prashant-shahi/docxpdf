@@ -1,0 +1,321 @@
+{
+  "id": "proposal",
+  "name": "Project Proposal",
+  "description": "A formal project proposal with executive summary, approach, timeline, and budget.",
+  "icon": "📋",
+  "category": "business",
+  "data": {
+    "page": {
+      "size": "a4"
+    },
+    "elements": [
+      {
+        "id": 1,
+        "type": "text",
+        "x": 40,
+        "y": 30,
+        "width": 515,
+        "height": 53,
+        "content": "Project Proposal",
+        "fontSize": 30,
+        "fontFamily": "Georgia",
+        "color": "#1a1a1a",
+        "bold": true,
+        "textAlign": "center"
+      },
+      {
+        "id": 2,
+        "type": "shape",
+        "x": 40,
+        "y": 70,
+        "width": 515,
+        "height": 2,
+        "borderColor": "#1677ff",
+        "borderWidth": 2,
+        "shapeType": "line"
+      },
+      {
+        "id": 3,
+        "type": "text",
+        "x": 40,
+        "y": 90,
+        "width": 250,
+        "height": 24,
+        "content": "Prepared for:",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#888"
+      },
+      {
+        "id": 4,
+        "type": "text",
+        "x": 40,
+        "y": 108,
+        "width": 250,
+        "height": 27,
+        "content": "[Company Name]",
+        "fontSize": 13,
+        "fontFamily": "Arial",
+        "color": "#1a1a1a",
+        "bold": true
+      },
+      {
+        "id": 5,
+        "type": "text",
+        "x": 40,
+        "y": 130,
+        "width": 250,
+        "height": 24,
+        "content": "Submitted by:",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#888"
+      },
+      {
+        "id": 6,
+        "type": "text",
+        "x": 40,
+        "y": 148,
+        "width": 250,
+        "height": 27,
+        "content": "John Doe",
+        "fontSize": 13,
+        "fontFamily": "Arial",
+        "color": "#1a1a1a",
+        "bold": true
+      },
+      {
+        "id": 7,
+        "type": "text",
+        "x": 350,
+        "y": 90,
+        "width": 205,
+        "height": 24,
+        "content": "Date:",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#888",
+        "textAlign": "right"
+      },
+      {
+        "id": 8,
+        "type": "text",
+        "x": 350,
+        "y": 108,
+        "width": 205,
+        "height": 27,
+        "content": "March 15, 2025",
+        "fontSize": 13,
+        "fontFamily": "Arial",
+        "color": "#1a1a1a",
+        "bold": true,
+        "textAlign": "right"
+      },
+      {
+        "id": 9,
+        "type": "text",
+        "x": 350,
+        "y": 130,
+        "width": 205,
+        "height": 24,
+        "content": "Project Ref: PRJ-2025-001",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#888",
+        "textAlign": "right"
+      },
+      {
+        "id": 10,
+        "type": "shape",
+        "x": 40,
+        "y": 180,
+        "width": 515,
+        "height": 1,
+        "borderColor": "#e0e0e0",
+        "borderWidth": 1,
+        "shapeType": "line"
+      },
+      {
+        "id": 11,
+        "type": "text",
+        "x": 40,
+        "y": 195,
+        "width": 220,
+        "height": 28,
+        "content": "Executive Summary",
+        "fontSize": 14,
+        "fontFamily": "Arial",
+        "color": "#1677ff",
+        "bold": true
+      },
+      {
+        "id": 12,
+        "type": "text",
+        "x": 40,
+        "y": 220,
+        "width": 515,
+        "height": 60,
+        "content": "This proposal outlines a comprehensive plan to modernize the company's digital infrastructure, streamline operations, and enhance customer experience through a new integrated platform. The project aims to deliver measurable improvements in efficiency, scalability, and user satisfaction within a 6-month timeline.",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#444"
+      },
+      {
+        "id": 13,
+        "type": "shape",
+        "x": 40,
+        "y": 295,
+        "width": 515,
+        "height": 1,
+        "borderColor": "#e0e0e0",
+        "borderWidth": 1,
+        "shapeType": "line"
+      },
+      {
+        "id": 14,
+        "type": "text",
+        "x": 40,
+        "y": 310,
+        "width": 220,
+        "height": 28,
+        "content": "Approach",
+        "fontSize": 14,
+        "fontFamily": "Arial",
+        "color": "#1677ff",
+        "bold": true
+      },
+      {
+        "id": 15,
+        "type": "text",
+        "x": 40,
+        "y": 335,
+        "width": 515,
+        "height": 60,
+        "content": "Our approach follows an agile methodology with iterative delivery cycles. We will begin with discovery and requirements gathering, followed by design, development, testing, and deployment. Each phase includes stakeholder reviews and quality assurance checkpoints to ensure alignment with project goals.",
+        "fontSize": 11,
+        "fontFamily": "Arial",
+        "color": "#444"
+      },
+      {
+        "id": 16,
+        "type": "shape",
+        "x": 40,
+        "y": 410,
+        "width": 515,
+        "height": 1,
+        "borderColor": "#e0e0e0",
+        "borderWidth": 1,
+        "shapeType": "line"
+      },
+      {
+        "id": 17,
+        "type": "text",
+        "x": 40,
+        "y": 425,
+        "width": 220,
+        "height": 28,
+        "content": "Timeline",
+        "fontSize": 14,
+        "fontFamily": "Arial",
+        "color": "#1677ff",
+        "bold": true
+      },
+      {
+        "id": 18,
+        "type": "table",
+        "x": 40,
+        "y": 455,
+        "width": 515,
+        "height": 160,
+        "rows": 5,
+        "cols": 3,
+        "headerRows": 1,
+        "rotation": 0,
+        "opacity": 1,
+        "zIndex": 0,
+        "borderColor": "#d0d5dd",
+        "borderWidth": 1,
+        "borderStyle": "solid",
+        "cellPadding": 6,
+        "colWidths": [175, 130, 210],
+        "rowHeights": [32, 32, 32, 32, 32],
+        "cells": [
+          [
+            { "content": "Phase", "bold": true, "bgColor": "#f0f4ff" },
+            { "content": "Duration", "bold": true, "textAlign": "center", "bgColor": "#f0f4ff" },
+            { "content": "Deliverable", "bold": true, "textAlign": "center", "bgColor": "#f0f4ff" }
+          ],
+          [
+            { "content": "Discovery" },
+            { "content": "2 weeks", "textAlign": "center" },
+            { "content": "Requirements Doc", "textAlign": "center" }
+          ],
+          [
+            { "content": "Design" },
+            { "content": "4 weeks", "textAlign": "center" },
+            { "content": "Design Mockups", "textAlign": "center" }
+          ],
+          [
+            { "content": "Development" },
+            { "content": "12 weeks", "textAlign": "center" },
+            { "content": "Working Platform", "textAlign": "center" }
+          ],
+          [
+            { "content": "Testing & QA" },
+            { "content": "4 weeks", "textAlign": "center" },
+            { "content": "QA Report", "textAlign": "center" }
+          ]
+        ]
+      },
+      {
+        "id": 37,
+        "type": "shape",
+        "x": 40,
+        "y": 620,
+        "width": 515,
+        "height": 1,
+        "borderColor": "#e0e0e0",
+        "borderWidth": 1,
+        "shapeType": "line"
+      },
+      {
+        "id": 38,
+        "type": "text",
+        "x": 40,
+        "y": 635,
+        "width": 220,
+        "height": 28,
+        "content": "Budget Overview",
+        "fontSize": 14,
+        "fontFamily": "Arial",
+        "color": "#1677ff",
+        "bold": true
+      },
+      {
+        "id": 39,
+        "type": "text",
+        "x": 40,
+        "y": 665,
+        "width": 515,
+        "height": 28,
+        "content": "Total Estimated Budget: $45,000 – $55,000",
+        "fontSize": 14,
+        "fontFamily": "Arial",
+        "color": "#1a1a1a",
+        "bold": true
+      },
+      {
+        "id": 40,
+        "type": "text",
+        "x": 40,
+        "y": 690,
+        "width": 515,
+        "height": 22,
+        "content": "Includes development, design, testing, deployment, and 3 months of post-launch support.",
+        "fontSize": 10,
+        "fontFamily": "Arial",
+        "color": "#888"
+      }
+    ]
+  }
+}

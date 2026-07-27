@@ -1,0 +1,208 @@
+{
+  "id": "agenda",
+  "name": "Meeting Agenda",
+  "description": "A structured meeting agenda with topics, time allocations, and action items.",
+  "icon": "📅",
+  "category": "business",
+  "data": {
+    "page": {
+      "size": "a4"
+    },
+    "elements": [
+      {
+        "id": 1,
+        "type": "text",
+        "x": 60,
+        "y": 40,
+        "width": 475,
+        "height": 50,
+        "content": "Meeting Agenda",
+        "fontSize": 28,
+        "fontFamily": "Arial",
+        "color": "#1a1a1a",
+        "bold": true,
+        "textAlign": "center"
+      },
+      {
+        "id": 2,
+        "type": "shape",
+        "x": 60,
+        "y": 80,
+        "width": 475,
+        "height": 2,
+        "borderColor": "#1677ff",
+        "borderWidth": 2,
+        "shapeType": "line"
+      },
+      {
+        "id": 3,
+        "type": "text",
+        "x": 60,
+        "y": 100,
+        "width": 150,
+        "height": 25,
+        "content": "Date:",
+        "fontSize": 12,
+        "fontFamily": "Arial",
+        "color": "#555"
+      },
+      {
+        "id": 4,
+        "type": "text",
+        "x": 115,
+        "y": 100,
+        "width": 200,
+        "height": 25,
+        "content": "March 15, 2025",
+        "fontSize": 12,
+        "fontFamily": "Arial",
+        "color": "#333",
+        "bold": true
+      },
+      {
+        "id": 5,
+        "type": "text",
+        "x": 60,
+        "y": 120,
+        "width": 150,
+        "height": 25,
+        "content": "Time:",
+        "fontSize": 12,
+        "fontFamily": "Arial",
+        "color": "#555"
+      },
+      {
+        "id": 6,
+        "type": "text",
+        "x": 115,
+        "y": 120,
+        "width": 200,
+        "height": 25,
+        "content": "10:00 AM – 11:00 AM",
+        "fontSize": 12,
+        "fontFamily": "Arial",
+        "color": "#333",
+        "bold": true
+      },
+      {
+        "id": 7,
+        "type": "text",
+        "x": 60,
+        "y": 140,
+        "width": 150,
+        "height": 25,
+        "content": "Location:",
+        "fontSize": 12,
+        "fontFamily": "Arial",
+        "color": "#555"
+      },
+      {
+        "id": 8,
+        "type": "text",
+        "x": 145,
+        "y": 140,
+        "width": 300,
+        "height": 25,
+        "content": "Conference Room B / Zoom",
+        "fontSize": 12,
+        "fontFamily": "Arial",
+        "color": "#333",
+        "bold": true
+      },
+      {
+        "id": 9,
+        "type": "shape",
+        "x": 60,
+        "y": 170,
+        "width": 475,
+        "height": 1,
+        "borderColor": "#e0e0e0",
+        "borderWidth": 1,
+        "shapeType": "line"
+      },
+      {
+        "id": 10,
+        "type": "table",
+        "x": 60,
+        "y": 185,
+        "width": 475,
+        "height": 155,
+        "rows": 5,
+        "cols": 3,
+        "headerRows": 1,
+        "rotation": 0,
+        "opacity": 1,
+        "zIndex": 0,
+        "borderColor": "#d0d5dd",
+        "borderWidth": 1,
+        "borderStyle": "solid",
+        "cellPadding": 6,
+        "colWidths": [235, 120, 120],
+        "rowHeights": [31, 31, 31, 31, 31],
+        "cells": [
+          [
+            { "content": "Topic", "bold": true, "bgColor": "#f0f4ff" },
+            { "content": "Lead", "bold": true, "textAlign": "center", "bgColor": "#f0f4ff" },
+            { "content": "Duration", "bold": true, "textAlign": "center", "bgColor": "#f0f4ff" }
+          ],
+          [
+            { "content": "Project Status Update" },
+            { "content": "Alice", "textAlign": "center" },
+            { "content": "15 min", "textAlign": "center" }
+          ],
+          [
+            { "content": "Budget Review" },
+            { "content": "Bob", "textAlign": "center" },
+            { "content": "15 min", "textAlign": "center" }
+          ],
+          [
+            { "content": "New Initiative Planning" },
+            { "content": "Charlie", "textAlign": "center" },
+            { "content": "20 min", "textAlign": "center" }
+          ],
+          [
+            { "content": "Action Items & Next Steps" },
+            { "content": "John Doe", "textAlign": "center" },
+            { "content": "10 min", "textAlign": "center" }
+          ]
+        ]
+      },
+      {
+        "id": 11,
+        "type": "shape",
+        "x": 60,
+        "y": 350,
+        "width": 475,
+        "height": 1,
+        "borderColor": "#d0d5dd",
+        "borderWidth": 1,
+        "shapeType": "line"
+      },
+      {
+        "id": 12,
+        "type": "text",
+        "x": 60,
+        "y": 370,
+        "width": 475,
+        "height": 28,
+        "content": "Notes",
+        "fontSize": 14,
+        "fontFamily": "Arial",
+        "color": "#1a1a1a",
+        "bold": true
+      },
+      {
+        "id": 13,
+        "type": "shape",
+        "x": 60,
+        "y": 395,
+        "width": 475,
+        "height": 120,
+        "fillColor": "#fafafa",
+        "borderColor": "#d0d5dd",
+        "borderWidth": 1,
+        "shapeType": "rect"
+      }
+    ]
+  }
+}

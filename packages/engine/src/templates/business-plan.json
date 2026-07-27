@@ -1,0 +1,330 @@
+{
+  "id": "business-plan",
+  "name": "Business Plan",
+  "description": "Three-page business plan with executive summary, market analysis, and financial projections.",
+  "icon": "\ud83d\udcca",
+  "category": "business",
+  "data": {
+    "page": {
+      "size": "a4",
+      "orientation": "portrait",
+      "bgColor": "#ffffff"
+    },
+    "pageElements": {
+      "0": [
+        {
+          "id": 1,
+          "type": "text",
+          "x": 60,
+          "y": 180,
+          "width": 475,
+          "height": 62,
+          "content": "[Company Name]",
+          "fontSize": 36,
+          "fontFamily": "Georgia",
+          "color": "#1a1a1a",
+          "bold": true,
+          "textAlign": "center"
+        },
+        {
+          "id": 2,
+          "type": "text",
+          "x": 60,
+          "y": 240,
+          "width": 475,
+          "height": 31,
+          "content": "BUSINESS PLAN",
+          "fontSize": 16,
+          "fontFamily": "Arial",
+          "color": "#1677ff",
+          "bold": true,
+          "textAlign": "center",
+          "letterSpacing": "4"
+        },
+        {
+          "id": 3,
+          "type": "text",
+          "x": 60,
+          "y": 280,
+          "width": 475,
+          "height": 48,
+          "content": "A comprehensive roadmap for growth and success in [Year]",
+          "fontSize": 13,
+          "fontFamily": "Arial",
+          "color": "#666",
+          "textAlign": "center"
+        },
+        {
+          "id": 4,
+          "type": "text",
+          "x": 60,
+          "y": 360,
+          "width": 475,
+          "height": 24,
+          "content": "Prepared by: [Name]",
+          "fontSize": 11,
+          "fontFamily": "Arial",
+          "color": "#555",
+          "textAlign": "center"
+        },
+        {
+          "id": 5,
+          "type": "text",
+          "x": 60,
+          "y": 382,
+          "width": 475,
+          "height": 24,
+          "content": "Date: [Date]",
+          "fontSize": 11,
+          "fontFamily": "Arial",
+          "color": "#555",
+          "textAlign": "center"
+        },
+        {
+          "id": 6,
+          "type": "text",
+          "x": 60,
+          "y": 404,
+          "width": 475,
+          "height": 22,
+          "content": "Confidential",
+          "fontSize": 10,
+          "fontFamily": "Arial",
+          "color": "#999",
+          "textAlign": "center"
+        },
+        {
+          "id": 7,
+          "type": "shape",
+          "x": 160,
+          "y": 324,
+          "width": 275,
+          "height": 2,
+          "borderColor": "#1677ff",
+          "borderWidth": 2,
+          "shapeType": "line"
+        }
+      ],
+      "1": [
+        {
+          "id": 8,
+          "type": "text",
+          "x": 60,
+          "y": 40,
+          "width": 475,
+          "height": 34,
+          "content": "1. Executive Summary",
+          "fontSize": 18,
+          "fontFamily": "Georgia",
+          "color": "#1a1a1a",
+          "bold": true
+        },
+        {
+          "id": 9,
+          "type": "shape",
+          "x": 60,
+          "y": 66,
+          "width": 60,
+          "height": 3,
+          "borderColor": "#1677ff",
+          "borderWidth": 3,
+          "shapeType": "line"
+        },
+        {
+          "id": 10,
+          "type": "text",
+          "x": 60,
+          "y": 90,
+          "width": 475,
+          "height": 120,
+          "content": "[Company Name] is a [industry] company founded in [Year] with a mission to [mission statement]. We provide [product/service] to [target market], addressing the key challenge of [problem solved].\n\nOur business model centers on [revenue model], and we project reaching [revenue goal] within [timeframe]. This business plan outlines our strategy for market entry, growth, and financial sustainability.",
+          "fontSize": 11,
+          "fontFamily": "Arial",
+          "color": "#444"
+        },
+        {
+          "id": 11,
+          "type": "text",
+          "x": 60,
+          "y": 240,
+          "width": 475,
+          "height": 34,
+          "content": "2. Company Overview",
+          "fontSize": 18,
+          "fontFamily": "Georgia",
+          "color": "#1a1a1a",
+          "bold": true
+        },
+        {
+          "id": 12,
+          "type": "shape",
+          "x": 60,
+          "y": 266,
+          "width": 60,
+          "height": 3,
+          "borderColor": "#1677ff",
+          "borderWidth": 3,
+          "shapeType": "line"
+        },
+        {
+          "id": 13,
+          "type": "text",
+          "x": 60,
+          "y": 290,
+          "width": 475,
+          "height": 132,
+          "content": "Founded in [Year], [Company Name] is headquartered in [Location]. We operate in the [industry] sector, serving [customer segment].\n\nLegal Structure: [LLC / Corporation / Partnership]\nYear Founded: [Year]\nFounders: [Names]\nEmployees: [Number]\nLocation: [Address]",
+          "fontSize": 11,
+          "fontFamily": "Arial",
+          "color": "#444"
+        },
+        {
+          "id": 14,
+          "type": "text",
+          "x": 60,
+          "y": 430,
+          "width": 475,
+          "height": 34,
+          "content": "3. Market Analysis",
+          "fontSize": 18,
+          "fontFamily": "Georgia",
+          "color": "#1a1a1a",
+          "bold": true
+        },
+        {
+          "id": 15,
+          "type": "shape",
+          "x": 60,
+          "y": 456,
+          "width": 60,
+          "height": 3,
+          "borderColor": "#1677ff",
+          "borderWidth": 3,
+          "shapeType": "line"
+        },
+        {
+          "id": 16,
+          "type": "text",
+          "x": 60,
+          "y": 480,
+          "width": 475,
+          "height": 132,
+          "content": "The [industry] market is valued at [$XX billion] and is growing at [X]% annually. Key trends include [trend 1], [trend 2], and [trend 3].\n\nTarget Market: [description]\nMarket Size: [$XX]\nGrowth Rate: [X]%\nCompetitors: [main competitors]\nDifferentiation: [what makes you unique]",
+          "fontSize": 11,
+          "fontFamily": "Arial",
+          "color": "#444"
+        }
+      ],
+      "2": [
+        {
+          "id": 17,
+          "type": "text",
+          "x": 60,
+          "y": 40,
+          "width": 475,
+          "height": 34,
+          "content": "4. Products & Services",
+          "fontSize": 18,
+          "fontFamily": "Georgia",
+          "color": "#1a1a1a",
+          "bold": true
+        },
+        {
+          "id": 18,
+          "type": "shape",
+          "x": 60,
+          "y": 66,
+          "width": 60,
+          "height": 3,
+          "borderColor": "#1677ff",
+          "borderWidth": 3,
+          "shapeType": "line"
+        },
+        {
+          "id": 19,
+          "type": "text",
+          "x": 60,
+          "y": 90,
+          "width": 475,
+          "height": 132,
+          "content": "Our core offering includes:\n\n\u2022 [Product/Service 1] \u2014 [brief description and pricing]\n\u2022 [Product/Service 2] \u2014 [brief description and pricing]\n\u2022 [Product/Service 3] \u2014 [brief description and pricing]\n\nEach offering is designed to address specific customer needs and is backed by [quality assurance / guarantee].",
+          "fontSize": 11,
+          "fontFamily": "Arial",
+          "color": "#444"
+        },
+        {
+          "id": 20,
+          "type": "text",
+          "x": 60,
+          "y": 240,
+          "width": 475,
+          "height": 34,
+          "content": "5. Financial Projections",
+          "fontSize": 18,
+          "fontFamily": "Georgia",
+          "color": "#1a1a1a",
+          "bold": true
+        },
+        {
+          "id": 21,
+          "type": "shape",
+          "x": 60,
+          "y": 266,
+          "width": 60,
+          "height": 3,
+          "borderColor": "#1677ff",
+          "borderWidth": 3,
+          "shapeType": "line"
+        },
+        {
+          "id": 22,
+          "type": "text",
+          "x": 60,
+          "y": 290,
+          "width": 475,
+          "height": 168,
+          "content": "Year 1 Projections:\n\u2022 Revenue: [$XXX]\n\u2022 Cost of Goods Sold: [$XXX]\n\u2022 Gross Margin: [X]%\n\u2022 Operating Expenses: [$XXX]\n\u2022 Net Profit: [$XXX]\n\nFunding Required: [$XXX]\nUse of Funds: [product development, marketing, operations]",
+          "fontSize": 11,
+          "fontFamily": "Arial",
+          "color": "#444"
+        },
+        {
+          "id": 23,
+          "type": "text",
+          "x": 60,
+          "y": 430,
+          "width": 475,
+          "height": 34,
+          "content": "6. Milestones & Timeline",
+          "fontSize": 18,
+          "fontFamily": "Georgia",
+          "color": "#1a1a1a",
+          "bold": true
+        },
+        {
+          "id": 24,
+          "type": "shape",
+          "x": 60,
+          "y": 456,
+          "width": 60,
+          "height": 3,
+          "borderColor": "#1677ff",
+          "borderWidth": 3,
+          "shapeType": "line"
+        },
+        {
+          "id": 25,
+          "type": "text",
+          "x": 60,
+          "y": 480,
+          "width": 475,
+          "height": 168,
+          "content": "Q1: [Milestone \u2014 e.g., Product launch, hiring]\nQ2: [Milestone \u2014 e.g., Marketing campaign, partnerships]\nQ3: [Milestone \u2014 e.g., Expansion, new features]\nQ4: [Milestone \u2014 e.g., Revenue target, fundraising]\n\nKey Performance Indicators:\n\u2022 Customer Acquisition Cost: [$X]\n\u2022 Lifetime Value: [$X]\n\u2022 Monthly Recurring Revenue: [$X]",
+          "fontSize": 11,
+          "fontFamily": "Arial",
+          "color": "#444"
+        }
+      ]
+    }
+  }
+}
