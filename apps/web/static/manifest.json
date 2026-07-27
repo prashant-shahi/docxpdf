@@ -1,0 +1,65 @@
+{
+  "id": "/",
+  "name": "DOCxPDF",
+  "short_name": "DOCxPDF",
+  "description": "Private browser-based document editor — drag, drop, align, export to PDF or DOCX. Works offline.",
+  "start_url": "/documents",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "browser"],
+  "orientation": "any",
+  "background_color": "#1a1410",
+  "theme_color": "#e63946",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New document",
+      "short_name": "New",
+      "description": "Create a blank document",
+      "url": "/document/new",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "My documents",
+      "short_name": "Documents",
+      "url": "/documents",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/documents",
+      "accept": {
+        "application/zip": [".dxp"],
+        "application/json": [".json"]
+      }
+    }
+  ],
+  "prefer_related_applications": false
+}

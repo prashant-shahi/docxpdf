@@ -1,0 +1,38 @@
+{
+  "extends": "./.svelte-kit/tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "allowJs": true,
+    "checkJs": true
+  },
+  "include": [
+    ".svelte-kit/ambient.d.ts",
+    ".svelte-kit/non-ambient.d.ts",
+    "src/lib/**/*.ts",
+    "src/lib/**/*.d.ts",
+    "src/lib/**/*.svelte",
+    "src/routes/**/*.svelte",
+    "src/routes/**/*.ts"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules",
+    "**/*.test.ts",
+    "src/api",
+    "src/components",
+    "src/core",
+    "src/utils",
+    "src/styles",
+    "src/app.ts",
+    "src/types"
+  ]
+}
