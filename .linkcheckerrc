@@ -1,0 +1,11 @@
+[checking]
+# Only check HTML files, skip external URLs in CI
+internlinks=1
+externlinks=1
+
+[filtering]
+# Skip known external hosts that don't need checking
+ignore-url=^https?://fonts\.googleapis\.com
+ignore-url=^https?://fonts\.gstatic\.com
+ignore-url=^https?://github\.com
+ignore-url=^https?://linkedin\.com

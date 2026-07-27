@@ -1,0 +1,17 @@
+{
+  "private": true,
+  "name": "docxpdf",
+  "type": "module",
+  "scripts": {
+    "deploy": "npx wrangler deploy",
+    "dev": "npx wrangler dev"
+  },
+  "dependencies": {
+    "wrangler": "^4.105.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "cookie": "^0.7.0"
+    }
+  }
+}

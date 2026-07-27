@@ -1,0 +1,23 @@
+{
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "docxpdf",
+    "compatibility_date": "2026-05-26",
+    "assets": {
+        "directory": "apps/web/dist",
+        "not_found_handling": "single-page-application"
+    },
+    "build": {
+        "command": "make build",
+        "watch_dir": "apps/web/src"
+    },
+    "observability": {
+        "logs": {
+            "enabled": true,
+            "invocation_logs": true
+        },
+        "traces": {
+            "enabled": true,
+            "head_sampling_rate": 0.25
+        }
+    }
+}
