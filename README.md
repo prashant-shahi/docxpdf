@@ -1,0 +1,87 @@
+# DOCxPDF
+
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
+[![SvelteKit](https://img.shields.io/badge/SvelteKit-5-FF3E00?logo=svelte&logoColor=white)](https://kit.svelte.dev/)
+[![PWA](https://img.shields.io/badge/PWA-offline-5A0FC8)](#features)
+
+**Privacy-first visual document builder in the browser.** Drag text, images, shapes, and tables on a canvas; export to PDF, DOCX, HTML, or DXP. No account. Editing and storage stay on your device.
+
+## Why
+
+- **Client-side by default** — documents and images live in IndexedDB; nothing is required to leave the browser for normal editing and export.
+- **Free forever** — core editor, templates, exports, and BYOK AI assist are ungated.
+- **Bring your own key** — AI text assist and prompt → document use your provider keys (or local Ollama / LM Studio); keys stay in the browser.
+
+## Features
+
+- **Canvas editor** — multi-page layouts, zoom, multi-select, undo/redo, templates, tables, shapes
+- **Import / export** — PDF (print), DOCX, HTML, DXP package, JSON; basic DOCX import
+- **AI (BYOK)** — improve/write text elements; generate a full canvas document from a prompt; local usage history
+- **PWA** — installable, offline-capable service worker
+- **Page sizes** — A6–A3, B5, Letter, Legal, Executive, Tabloid
+
+## Quick start
+
+```bash
+make dev        # install deps + SvelteKit dev server on :5173
+make ci         # install → svelte-check → build → link check → tests
+make build      # production build → apps/web/dist
+make preview    # preview production build
+```
+
+Requirements: Node 20+, [pnpm](https://pnpm.io/), Make. Optional: Python 3 (link checker venv via `make tools`).
+
+## Tech stack
+
+SvelteKit 5 · TypeScript · Tailwind CSS · interact.js · JSZip · IndexedDB · Vitest · Playwright · Cloudflare Workers (static assets SPA)
+
+## Project layout
+
+```
+.
+├── Makefile                 # make dev / ci / build / deploy
+├── package.json             # workspace root + wrangler
+├── pnpm-workspace.yaml
+├── wrangler.jsonc           # Cloudflare assets deploy
+├── .github/                 # CI, E2E, coverage, Dependabot
+├── apps/
+│   └── web/                 # SvelteKit PWA
+└── packages/
+    └── engine/              # @docxpdf/engine shared document logic
+```
+
+## Development
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for workflows, tests, and gotchas.
+
+```bash
+make install        # pnpm install in apps/web
+make svelte-check   # Svelte + TS validation
+make test           # vitest (web)
+make test-engine    # vitest (@docxpdf/engine)
+make test-e2e       # Playwright
+make coverage       # coverage report
+make deploy         # build + wrangler deploy
+make clean          # remove node_modules, dist, caches
+```
+
+Or from the app package:
+
+```bash
+cd apps/web && pnpm dev
+cd apps/web && pnpm build
+cd apps/web && pnpm exec vitest run
+```
+
+## Deploy
+
+Static SPA (`@sveltejs/adapter-static`) served as Cloudflare Workers **assets-only**:
+
+```bash
+make build
+make deploy
+```
+
+## License
+
+[Apache License 2.0](./LICENSE)
