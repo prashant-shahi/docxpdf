@@ -56,6 +56,28 @@ These are covered by `.gitignore`.
 - Use conventional commit style when it fits (`feat:`, `fix:`, `docs:`, `ci:`, `chore:`).
 - Describe what changed and how you verified it (`make ci`, targeted tests, manual check).
 
+## Developer Certificate of Origin (DCO)
+
+There is **no CLA**. Every commit **must** include a [DCO](https://developercertificate.org/) sign-off:
+
+```bash
+git commit -s -m "feat: your change"
+```
+
+That adds:
+
+```
+Signed-off-by: Your Name <your.email@example.com>
+```
+
+It certifies you wrote the change (or have the right to submit it) under this project’s license. `-s` uses your `user.name` and `user.email` (prefer the same identity as on GitHub).
+
+Auto-append sign-off in a local clone:
+
+```bash
+git config core.hooksPath .githooks
+```
+
 ## License
 
-By contributing, you agree that your contributions are licensed under the [Apache License 2.0](./LICENSE).
+By contributing, you agree that your contributions are licensed under the [Apache License 2.0](./LICENSE) and that your commits are DCO-signed (`git commit -s`).

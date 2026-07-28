@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Append DCO Signed-off-by when missing (Developer Certificate of Origin).
+# Enable with: git config core.hooksPath .githooks
+
+COMMIT_MSG_FILE=$1
+COMMIT_SOURCE=$2
+
+# Do not touch merge commits
+if [ "$COMMIT_SOURCE" = "merge" ]; then
+  exit 0
+fi
+
+if grep -qE '^Signed-off-by: ' "$COMMIT_MSG_FILE"; then
+  exit 0
+fi
+
+SOB=$(git var GIT_AUTHOR_IDENT | sed -n 's/^\(.* <[^>]*>\).*$/Signed-off-by: \1/p')
+if [ -z "$SOB" ]; then
+  exit 0
+fi
+
+if [ -s "$COMMIT_MSG_FILE" ]; then
+  last=$(tail -c1 "$COMMIT_MSG_FILE" 2>/dev/null || true)
+  if [ -n "$last" ] && [ "$last" != $'\n' ]; then
+    printf '\n' >> "$COMMIT_MSG_FILE"
+  fi
+fi
+
+printf '\n%s\n' "$SOB" >> "$COMMIT_MSG_FILE"
