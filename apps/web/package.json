@@ -25,7 +25,7 @@
         "@testing-library/svelte": "^5.3.1",
         "@types/node": "^25.9.1",
         "@vitest/coverage-v8": "^4.1.10",
-        "autoprefixer": "^10.4.21",
+        "autoprefixer": "^10.5.4",
         "concurrently": "^10.0.4",
         "fake-indexeddb": "^6.2.5",
         "jsdom": "^26.1.0",
