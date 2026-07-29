@@ -27,6 +27,8 @@ import {
   MIN_UI_CONTRAST,
   ensureContrastColor,
   contrastRatio,
+  blendOver,
+  parseCssAlpha,
 } from "./color_contrast";
 import type { ImageTone } from "./image_palette";
 import type {
@@ -94,7 +96,7 @@ function clamp(n: number, min: number, max: number): number {
 
 function safeColor(v: unknown, fallback: string): string {
   const s = asString(v, fallback).trim();
-  if (/^#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$/.test(s)) return s;
+  if (/^#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?([0-9a-fA-F]{2})?$/.test(s)) return s;
   if (/^rgb(a)?\(/i.test(s)) return s;
   return fallback;
 }
@@ -366,8 +368,9 @@ function pointInElement(
 }
 
 /**
- * Effective solid background behind a point: topmost non-line shape fill
- * that contains the point, else the page background.
+ * Effective solid background behind a point: composite of non-line shape
+ * fills (bottom → top, respecting opacity / rgba alpha) over the page.
+ * Semi-transparent panels therefore affect text contrast correctly.
  */
 export function effectiveBackgroundAt(
   elements: CanvasElement[],
@@ -376,6 +379,7 @@ export function effectiveBackgroundAt(
   py: number,
   skipId?: number,
 ): string {
+  const base = pageBg || "#ffffff";
   const covering = elements
     .filter(
       (el) =>
@@ -385,15 +389,23 @@ export function effectiveBackgroundAt(
         pointInElement(px, py, el),
     )
     .sort((a, b) => (a.zIndex || 0) - (b.zIndex || 0));
-  if (covering.length === 0) return pageBg || "#ffffff";
-  // Walk from topmost down; skip transparent fills so content behind shows through.
-  for (let i = covering.length - 1; i >= 0; i--) {
-    const fill = ((covering[i] as ShapeElement).fillColor || "").trim().toLowerCase();
-    if (fill && fill !== "transparent" && fill !== "none") {
-      return (covering[i] as ShapeElement).fillColor || pageBg || "#ffffff";
-    }
+  if (covering.length === 0) return base;
+
+  let composite = base;
+  for (const el of covering) {
+    const shape = el as ShapeElement;
+    const raw = (shape.fillColor || "").trim();
+    const fill = raw.toLowerCase();
+    if (!fill || fill === "transparent" || fill === "none") continue;
+    const elOpacity =
+      typeof shape.opacity === "number" && Number.isFinite(shape.opacity)
+        ? Math.min(1, Math.max(0, shape.opacity))
+        : 1;
+    const alpha = parseCssAlpha(raw) * elOpacity;
+    if (alpha <= 0) continue;
+    composite = blendOver(raw, composite, alpha);
   }
-  return pageBg || "#ffffff";
+  return composite;
 }
 
 /**
@@ -723,7 +735,7 @@ export function normalizeAIDocument(
 }
 
 /** Schema description embedded in the AI system prompt. */
-export const AI_DOCUMENT_SCHEMA_PROMPT = `You are a document layout designer for DOCxPDF.
+export const AI_DOCUMENT_SCHEMA_PROMPT = `You are a senior document layout designer for DOCxPDF — think editorial design, not a plain word processor dump.
 Output ONLY a single JSON object (no markdown, no commentary) with this shape:
 {
   "title": "string",
@@ -738,33 +750,53 @@ Allowed element types: "text", "shape", "table", "image".
 Coordinates are CSS pixels. Page sizes: A4 portrait 595×842 (landscape 842×595), Letter portrait 612×792 (landscape 792×612).
 Keep ≥40px margins. Usable content box on A4 portrait ≈ 515×762. Prefer full content width for body text and tables. Stack elements with clear hierarchy; avoid large empty unused regions.
 
+Design aesthetics (critical — make pages look intentional):
+- Infer the document type from the user prompt (resume, invoice, flyer, poster, invitation, report, proposal, menu, newsletter, certificate, letter, agenda, portfolio, etc.) and choose structure, density, and decoration that match that type and the user's likely expectations.
+- Establish a simple visual system: 1–2 accent colors + neutrals; consistent type scale (e.g. title 28–36, section 16–20, body 11–13, caption 9–11); aligned columns/edges; even gaps (8–16px between related blocks).
+- Use shapes as design: header bars, side rails, accent underlines, rounded cards, circular badges, soft mats under images, quote callout panels — not only hard separators.
+- SEMI-TRANSPARENT BACKDROPS: Often place rounded/rect shapes BEHIND text, tables, or images with soft color and reduced opacity so content floats on a tinted panel.
+  - Prefer shape "opacity" between 0.12 and 0.45 for translucent mats, or fillColor as "rgba(r,g,b,0.15–0.4)" / "#rrggbbaa".
+  - Examples: pale blue wash under a title block; frosted white card (opacity ~0.85) on a tinted page; soft brand-color chip behind a short callout; translucent mat under a photo.
+  - Keep these shapes BELOW content (lower zIndex / earlier in pageElements). Content elements stay opacity 1.
+  - Do not use translucent fills for tiny 1–2px lines; those stay solid.
+- Match decoration level to genre:
+  - Resume / CV / formal letter: clean, restrained accents (thin rules, one header bar); little or no translucency.
+  - Invoice / quote / contract: structured tables, clear totals, minimal decoration.
+  - Report / proposal / agenda: section headers, optional side accent, tables when data-heavy.
+  - Flyer / poster / invitation / event promo: bolder type, more shapes, optional translucent cards, stronger color.
+  - Menu / portfolio / newsletter: cards, image mats, readable columns.
+- Add only content that fits the request (realistic dates, roles, line items, addresses, CTAs). Infer sensible extras the user would expect for that document type (e.g. invoice: bill-to, line items, total; resume: contact + sections; flyer: headline, date/place, CTA) — never invent sensitive personal data; use plausible placeholders labeled as such only when needed.
+- Prefer rounded shapes for soft UI cards; rects for banners/rails; lines for thin rules. Avoid random stars/diamonds unless the theme is playful.
+
 Layout / stacking (critical):
-- Different elements MUST NOT overlay each other (no overlapping text/images/tables/lines).
-- Exception: background shapes (panels, banners, mats, cards) may sit BEHIND content — lower zIndex / earlier in the pageElements array — never on top of text, images, or tables.
+- Different content elements MUST NOT overlay each other (no overlapping text/images/tables/lines).
+- Exception: background shapes (panels, banners, mats, cards, washes) may sit BEHIND content — lower zIndex / earlier in the pageElements array — never on top of text, images, or tables.
 - Leave small gaps between neighboring content elements so boxes do not collide.
+- Put decorative background shapes first in each page's array (or give them lower zIndex) so content paints above them.
 
 Colors:
-- Shape fillColor and borderColor accept "#rrggbb" or "transparent" (no fill / no stroke color). Use "transparent" when you want an outline-only shape or no fill.
-- Table cell bgColor may be omitted for no cell fill (page shows through).
+- Shape fillColor and borderColor accept "#rrggbb", "#rrggbbaa", "rgba(r,g,b,a)", or "transparent".
+- Table cell bgColor may be omitted for no cell fill (page shows through); soft header tints are encouraged on polished docs.
+- Shape elements also support "opacity" (0–1, default 1) for whole-element translucency — ideal for background washes.
 
 Visibility / contrast (critical):
 - Default page background is white when omitted — never put white/near-white text on it.
-- Every text color MUST strongly contrast with what sits behind it (page bgColor, or a shape fill under that text). Prefer dark text (#111–#222) on light backgrounds, or light text (#fff–#f5f5f5) on dark panels/banners.
+- Every text color MUST strongly contrast with the effective surface behind it (page + any translucent shapes under it). Prefer dark text (#111–#222) on light or soft-tint panels; light text only on clearly dark solid/opaque panels.
 - Do not place light-gray text on white, dark text on navy/black panels, or same-hue text on matching shapes.
 - Table cell text must contrast with that cell's bgColor (or the page if the cell has no bg). Header rows with dark fills need light text.
 - Shape borders/lines must remain visible against the page and against their own fill (unless borderColor is "transparent" and you intentionally want no stroke).
-- Colored shapes used as section backgrounds must leave readable text on top (choose fill and text as a pair).
-- Attached images may include tone ("dark"|"light"|"mixed") and palette hex swatches. Page bgColor and any shape behind/framing an image MUST contrast with that image (dark images → light page or light mat; light images → avoid vanishing into white — use a subtle mat/border). Prefer a light page when any catalog image is tone="dark" unless images sit only on clearly light panels.
+- Colored shapes used as section backgrounds must leave readable text on top (choose fill, opacity, and text as a set).
+- Attached images may include tone ("dark"|"light"|"mixed") and palette hex swatches. Page bgColor and any shape behind/framing an image MUST contrast with that image (dark images → light page or light mat; light images → avoid vanishing into white — use a subtle mat/border). Prefer a light page when any catalog image is tone="dark" unless images sit only on clearly light panels. Soft translucent mats under images are encouraged.
 
 Emoji / tone of voice:
 - For playful or casual docs (event flyers, posters, invitations, party/social promos, fun newsletters, light lifestyle pieces), you MAY use a few tasteful emoji in headings or short callouts when they fit the vibe — do not spam every line.
 - For serious or official docs (resumes/CVs, invoices, quotes, contracts, status/business reports, meeting agendas/minutes, formal proposals, academic or corporate blog posts), do NOT use emoji at all.
 
-text: { "type":"text", "x", "y", "width", "height", "content", "fontSize", "fontFamily", "color", "bold?", "italic?", "underline?", "textAlign?" }
-shape: { "type":"shape", "x", "y", "width", "height", "shapeType":"rect"|"rounded"|"circle"|"triangle"|"diamond"|"star"|"hexagon"|"arrow"|"line", "fillColor":"#hex"|"transparent", "borderColor":"#hex"|"transparent", "borderWidth" }
-table: { "type":"table", "x", "y", "width", "height", "rows", "cols", "headerRows", "cells":[[{"content":"...","color?","bgColor?"}]] }
-image: { "type":"image", "x", "y", "width", "height", "imageId":"img_…" }  — OR "libraryTitle":"<title from Available images>"
+text: { "type":"text", "x", "y", "width", "height", "content", "fontSize", "fontFamily", "color", "bold?", "italic?", "underline?", "textAlign?", "opacity?" }
+shape: { "type":"shape", "x", "y", "width", "height", "shapeType":"rect"|"rounded"|"circle"|"triangle"|"diamond"|"star"|"hexagon"|"arrow"|"line", "fillColor":"#hex"|"rgba(...)"|"transparent", "borderColor":"#hex"|"transparent", "borderWidth", "opacity?" }
+table: { "type":"table", "x", "y", "width", "height", "rows", "cols", "headerRows", "cells":[[{"content":"...","color?","bgColor?"}]], "opacity?" }
+image: { "type":"image", "x", "y", "width", "height", "imageId":"img_…" , "opacity?" }  — OR "libraryTitle":"<title from Available images>"
 Do NOT use http(s) URLs as image src. Only place images from the Available images catalog (by imageId or libraryTitle).
 
 Use fonts from: Arial, Georgia, Times New Roman, Courier New, Verdana, Trebuchet MS.
-Max ~80 elements total. Fill real content from the user prompt — no lorem ipsum placeholders unless the user asked for placeholders.`;
+Max ~80 elements total (including decorative shapes). Fill real content from the user prompt — no lorem ipsum placeholders unless the user asked for placeholders.`;

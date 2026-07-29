@@ -30,16 +30,18 @@ export interface Rgb {
   b: number;
 }
 
-/** Parse #rgb / #rrggbb / rgb()/rgba() into 0–255 channels. */
+/** Parse #rgb / #rrggbb / #rrggbbaa / rgb()/rgba() into 0–255 channels. */
 export function parseCssColor(input: string | undefined | null): Rgb | null {
   if (!input) return null;
   const s = input.trim();
-  const hex = s.match(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/);
+  const hex = s.match(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/);
   if (hex) {
     let h = hex[1];
     if (h.length === 3) {
       h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
     }
+    // Ignore alpha nibble for solid RGB parse (#rrggbbaa → first 6 digits)
+    if (h.length === 8) h = h.slice(0, 6);
     return {
       r: parseInt(h.slice(0, 2), 16),
       g: parseInt(h.slice(2, 4), 16),
@@ -57,6 +59,53 @@ export function parseCssColor(input: string | undefined | null): Rgb | null {
     };
   }
   return null;
+}
+
+/** Alpha from rgba()/ #rrggbbaa, else 1. Does not include element opacity. */
+export function parseCssAlpha(input: string | undefined | null): number {
+  if (!input) return 1;
+  const s = input.trim();
+  const hex8 = s.match(/^#([0-9a-fA-F]{8})$/);
+  if (hex8) {
+    return clamp01(parseInt(hex8[1].slice(6, 8), 16) / 255);
+  }
+  const rgba = s.match(
+    /^rgba\(\s*[0-9.]+\s*,\s*[0-9.]+\s*,\s*[0-9.]+\s*,\s*([0-9.]+)\s*\)/i,
+  );
+  if (rgba) return clamp01(Number(rgba[1]));
+  return 1;
+}
+
+function clamp01(n: number): number {
+  if (!Number.isFinite(n)) return 1;
+  return Math.min(1, Math.max(0, n));
+}
+
+/** Blend foreground over background with alpha in 0–1 → #rrggbb. */
+export function blendOver(
+  fg: string | undefined | null,
+  bg: string | undefined | null,
+  alpha: number,
+): string {
+  const a = clamp01(alpha);
+  if (a <= 0) return (bg && parseCssColor(bg) ? toHex(parseCssColor(bg)!) : "#ffffff");
+  if (a >= 1) {
+    const solid = parseCssColor(fg);
+    return solid ? toHex(solid) : (bg && parseCssColor(bg) ? toHex(parseCssColor(bg)!) : "#ffffff");
+  }
+  const f = parseCssColor(fg) || { r: 255, g: 255, b: 255 };
+  const b = parseCssColor(bg) || { r: 255, g: 255, b: 255 };
+  return toHex({
+    r: Math.round(f.r * a + b.r * (1 - a)),
+    g: Math.round(f.g * a + b.g * (1 - a)),
+    b: Math.round(f.b * a + b.b * (1 - a)),
+  });
+}
+
+function toHex(rgb: Rgb): string {
+  const h = (n: number) =>
+    clampByte(n).toString(16).padStart(2, "0");
+  return `#${h(rgb.r)}${h(rgb.g)}${h(rgb.b)}`;
 }
 
 function clampByte(n: number): number {
