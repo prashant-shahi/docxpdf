@@ -18,8 +18,6 @@
   import { page } from "$app/stores";
   import TopBar from "$lib/components/layout/TopBar.svelte";
 
-  let { status = 500, error = new Error("Unknown error") } = $props();
-
   function goHome() {
     window.location.href = "/";
   }
@@ -37,7 +35,7 @@
       class="text-7xl font-extrabold mb-4"
       style="color: var(--color-primary); font-family: var(--font-heading);"
     >
-      {$page.status || status}
+      {$page.status || 500}
     </div>
     <h1
       class="text-2xl font-bold mb-2"
@@ -84,7 +82,7 @@
           class="mt-2 text-xs p-3 rounded-lg overflow-auto max-h-32"
           style="color: var(--color-text-secondary); background: var(--color-surface); border: 1px solid var(--color-border);"
         >
-{$page.error?.message || error?.message || "No details available"}
+{$page.error?.message || "No details available"}
         </pre>
       </details>
     {/if}
