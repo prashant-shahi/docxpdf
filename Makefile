@@ -31,7 +31,7 @@ help:
 	@echo "║  make test-e2e             Run Playwright e2e tests                       ║"
 	@echo "║  make coverage             Run tests with coverage report                 ║"
 	@echo "║  make deploy               Build + deploy to Cloudflare Workers           ║"
-	@echo "║  make docker-build         Build local Docker image (nginx static)        ║"
+	@echo "║  make docker-build         Build SPA then nginx-only Docker image         ║"
 	@echo "║  make docker-run           Run container on http://localhost:8080         ║"
 	@echo "║  make clean                Remove caches, node_modules, .tools/           ║"
 	@echo "╚═══════════════════════════════════════════════════════════════════════════╝"
@@ -87,7 +87,9 @@ ci: ci-frontend
 deploy: build
 	pnpm exec wrangler deploy
 
-docker-build:
+# Image is nginx + apps/web/dist only (no Node). SPA is built on the host/CI first.
+docker-build: build
+	@test -f $(WEB_DIR)/dist/index.html || (echo "missing $(WEB_DIR)/dist — build failed?" && exit 1)
 	docker build -t docxpdf:local .
 
 docker-run: docker-build

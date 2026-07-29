@@ -95,13 +95,22 @@ make deploy    # wrangler deploy (Workers static assets)
 
 ### Docker (self-host)
 
+The image is **nginx + static files only** (no Node toolchain). Build the SPA first, then pack `apps/web/dist`:
+
 ```bash
-make docker-build
-make docker-run    # http://localhost:8080
-# or: docker build -t docxpdf . && docker run --rm -p 8080:80 docxpdf
+make docker-build   # runs `make build`, then docker build
+make docker-run     # http://localhost:8080
 ```
 
-Serves `apps/web/dist` behind nginx. Image is build-only + static files — no Node in the runtime container.
+Or step by step:
+
+```bash
+make build
+docker build -t docxpdf:local .
+docker run --rm -p 8080:80 docxpdf:local
+```
+
+CI can run the same: install → `make build` → `docker build` / push. Runtime image stays small (~nginx alpine + assets).
 
 ### Any static host
 

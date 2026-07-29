@@ -1,0 +1,78 @@
+# Build static SPA in CI, then pack an nginx-only image (no Node in the final image).
+name: Docker
+
+on:
+    push:
+        branches: [main, master]
+        tags: ["v*"]
+    pull_request:
+        branches: [main, master]
+        paths:
+            - "apps/web/**"
+            - "packages/engine/**"
+            - "Dockerfile"
+            - "docker/**"
+            - ".dockerignore"
+            - "Makefile"
+            - "package.json"
+            - "pnpm-workspace.yaml"
+            - ".github/workflows/docker.yml"
+
+env:
+    IMAGE_NAME: docxpdf
+
+jobs:
+    image:
+        name: Build image
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            packages: write
+        steps:
+            - uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+
+            - uses: pnpm/action-setup@v4
+              with:
+                  version: "10"
+                  run_install: false
+
+            - name: Build static SPA
+              run: make build
+
+            - name: Set image tags
+              id: meta
+              run: |
+                  REPO_LC=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+                  echo "repo=${REPO_LC}" >> "$GITHUB_OUTPUT"
+                  if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+                    echo "tags=ghcr.io/${REPO_LC}:latest,ghcr.io/${REPO_LC}:${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+                  else
+                    SHA_SHORT=$(echo "${{ github.sha }}" | cut -c1-7)
+                    echo "tags=ghcr.io/${REPO_LC}:sha-${SHA_SHORT}" >> "$GITHUB_OUTPUT"
+                  fi
+
+            - name: Build Docker image
+              run: |
+                  docker build -t "${{ env.IMAGE_NAME }}:ci" .
+                  docker images "${{ env.IMAGE_NAME }}:ci"
+
+            - name: Log in to GHCR
+              if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
+              uses: docker/login-action@v3
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Push image
+              if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
+              run: |
+                  IFS=',' read -ra TAGS <<< "${{ steps.meta.outputs.tags }}"
+                  for tag in "${TAGS[@]}"; do
+                    docker tag "${{ env.IMAGE_NAME }}:ci" "$tag"
+                    docker push "$tag"
+                  done

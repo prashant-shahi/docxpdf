@@ -1,23 +1,10 @@
-**/node_modules
-**/dist
-**/.svelte-kit
-.git
-.github
-.githooks
-.tools
-.wrangler
-.local
-coverage
-playwright-report
-test-results
-**/*.pem
-.dev.vars
-.env
-.env.*
-**/.DS_Store
-**/Thumbs.db
-apps/web/e2e
-**/*.log
-README.md
-CONTRIBUTING.md
-LICENSE
+# Context should already contain apps/web/dist from `make build` / CI.
+# Keep the build context small; only dist + nginx config are needed.
+**
+!apps/
+!apps/web/
+!apps/web/dist/
+!apps/web/dist/**
+!docker/
+!docker/nginx.conf
+!Dockerfile
