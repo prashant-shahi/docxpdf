@@ -103,14 +103,11 @@ docker-run: docker-build
 docker-login:
 	echo "$$(gh auth token)" | docker login ghcr.io -u "$$(gh api user -q .login)" --password-stdin
 
-# Push :latest and :sha-<short> (run docker-login first if needed)
+# Push :latest (run docker-login first if needed)
 docker-push: docker-build docker-login
-	@SHA=$$(git rev-parse --short HEAD); \
-	docker tag docxpdf:local $(GHCR_IMAGE):latest; \
-	docker tag docxpdf:local $(GHCR_IMAGE):sha-$$SHA; \
-	docker push $(GHCR_IMAGE):latest; \
-	docker push $(GHCR_IMAGE):sha-$$SHA; \
-	echo "Pushed $(GHCR_IMAGE):latest and $(GHCR_IMAGE):sha-$$SHA"
+	docker tag docxpdf:local $(GHCR_IMAGE):latest
+	docker push $(GHCR_IMAGE):latest
+	@echo "Pushed $(GHCR_IMAGE):latest"
 
 clean:
 	rm -rf $(WEB_DIR)/node_modules $(WEB_DIR)/dist $(WEB_DIR)/.svelte-kit $(TOOLS_DIR) .wrangler

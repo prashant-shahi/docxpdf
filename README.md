@@ -103,7 +103,17 @@ docker run --rm -p 8080:80 ghcr.io/prashant-shahi/docxpdf:latest
 # http://localhost:8080
 ```
 
-Tags: `latest` (default branch), `sha-<short>`, and version tags on `v*` releases. Package: [ghcr.io/prashant-shahi/docxpdf](https://github.com/prashant-shahi/docxpdf/pkgs/container/docxpdf).
+Tags:
+
+| Tag | When |
+|-----|------|
+| `latest` | push to `main` |
+| `v0.1.0` (etc.) | git tag `v0.1.0` |
+| `pr-<number>` | PR labeled **`build-image`** only |
+
+Package: [ghcr.io/prashant-shahi/docxpdf](https://github.com/prashant-shahi/docxpdf/pkgs/container/docxpdf).
+
+**PR images:** add label `build-image` → CI pushes `…:pr-123`. Rebuilds on new commits while the label stays. Label removed or PR closed/merged → cleanup deletes that tag (`.github/workflows/docker-cleanup.yml`).
 
 Local build / run:
 
@@ -116,10 +126,10 @@ Push to GHCR from your machine (`gh` must be logged in with `write:packages`):
 
 ```bash
 make docker-login   # echo "$(gh auth token)" | docker login ghcr.io -u "$(gh api user -q .login)" --password-stdin
-make docker-push    # build + push :latest and :sha-<short>
+make docker-push    # build + push :latest
 ```
 
-CI pushes on `main` / version tags (`.github/workflows/docker.yml`) with the default **`GITHUB_TOKEN`** (`packages: write`). Link the package to this repo and grant Actions **Write** under package settings → Manage Actions access.
+CI uses **`GITHUB_TOKEN`** (`packages: write`). Link the package to this repo and grant Actions **Write** under package settings → Manage Actions access.
 ### Any static host
 
 ```bash

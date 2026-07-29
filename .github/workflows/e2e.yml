@@ -7,7 +7,7 @@ name: E2E
 
 on:
     push:
-        branches: [main, master]
+        branches: [main]
         paths:
             - "apps/web/src/**"
             - "apps/web/e2e/**"
@@ -15,7 +15,7 @@ on:
             - "Makefile"
             - "apps/web/package.json"
     pull_request:
-        branches: [main, master]
+        branches: [main]
         paths:
             - "apps/web/src/**"
             - "apps/web/e2e/**"

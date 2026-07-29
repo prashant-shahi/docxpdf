@@ -1,0 +1,121 @@
+# Delete ephemeral PR images from GHCR when:
+# - build-image label is removed, or
+# - the PR is closed (merged or rejected).
+#
+# Tags: ghcr.io/<owner>/<repo>:pr-<number>
+name: Docker cleanup
+
+on:
+    pull_request:
+        types: [unlabeled, closed]
+        branches: [main]
+
+env:
+    REGISTRY: ghcr.io
+
+jobs:
+    cleanup-pr-image:
+        name: Delete PR image
+        runs-on: ubuntu-latest
+        # On unlabeled: only when build-image was removed
+        # On closed: always try to delete (no-op if never built)
+        if: |
+            github.event.action == 'closed' ||
+            (
+              github.event.action == 'unlabeled' &&
+              github.event.label.name == 'build-image'
+            )
+        permissions:
+            contents: read
+            packages: write
+            pull-requests: write
+        steps:
+            - name: Image coordinates
+              id: meta
+              run: |
+                  NAME="${REGISTRY}/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')"
+                  TAG="pr-${{ github.event.pull_request.number }}"
+                  echo "name=${NAME}" >> "$GITHUB_OUTPUT"
+                  echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+                  echo "ref=${NAME}:${TAG}" >> "$GITHUB_OUTPUT"
+                  # GHCR package name is the image name after owner/ (e.g. docxpdf)
+                  echo "package=$(echo '${{ github.event.repository.name }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+
+            - name: Delete GHCR tag via API
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  set -euo pipefail
+                  PACKAGE="${{ steps.meta.outputs.package }}"
+                  WANT_TAG="${{ steps.meta.outputs.tag }}"
+                  OWNER="${{ github.repository_owner }}"
+
+                  echo "Looking for package=${PACKAGE} tag=${WANT_TAG} (owner=${OWNER})"
+
+                  # User-owned packages (ghcr.io/<user>/<name>)
+                  # Paginate versions and delete any version that has our tag
+                  PAGE=1
+                  DELETED=0
+                  while true; do
+                    RESP=$(gh api \
+                      -H "Accept: application/vnd.github+json" \
+                      "/users/${OWNER}/packages/container/${PACKAGE}/versions?per_page=100&page=${PAGE}" \
+                      || true)
+                    # Empty / 404 → nothing to do
+                    if [ -z "$RESP" ] || [ "$RESP" = "[]" ]; then
+                      break
+                    fi
+                    # If API error JSON with message, stop
+                    if echo "$RESP" | jq -e 'type == "object" and has("message")' >/dev/null 2>&1; then
+                      echo "API: $(echo "$RESP" | jq -r .message)"
+                      break
+                    fi
+
+                    IDS=$(echo "$RESP" | jq -r --arg t "$WANT_TAG" \
+                      '.[] | select(.metadata.container.tags[]? == $t) | .id')
+                    for id in $IDS; do
+                      echo "Deleting package version id=${id} (tag ${WANT_TAG})"
+                      gh api -X DELETE \
+                        -H "Accept: application/vnd.github+json" \
+                        "/users/${OWNER}/packages/container/${PACKAGE}/versions/${id}"
+                      DELETED=$((DELETED + 1))
+                    done
+
+                    COUNT=$(echo "$RESP" | jq 'length')
+                    if [ "$COUNT" -lt 100 ]; then
+                      break
+                    fi
+                    PAGE=$((PAGE + 1))
+                  done
+
+                  if [ "$DELETED" -eq 0 ]; then
+                    echo "No GHCR version found for ${{ steps.meta.outputs.ref }} (ok if never built)"
+                  else
+                    echo "Deleted ${DELETED} version(s) for tag ${WANT_TAG}"
+                  fi
+
+            - name: Comment on PR
+              if: always()
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const ref = `${{ steps.meta.outputs.ref }}`;
+                      const reason =
+                        context.payload.action === 'closed'
+                          ? (context.payload.pull_request?.merged ? 'PR merged' : 'PR closed')
+                          : `label \`${context.payload.label?.name}\` removed`;
+                      const body = [
+                        '### Docker image cleanup',
+                        '',
+                        `Removed GHCR tag \`${ref}\` (${reason}).`,
+                      ].join('\n');
+                      try {
+                        await github.rest.issues.createComment({
+                          owner: context.repo.owner,
+                          repo: context.repo.repo,
+                          issue_number: context.issue.number,
+                          body,
+                        });
+                      } catch (e) {
+                        core.warning(`Could not comment: ${e.message}`);
+                      }
