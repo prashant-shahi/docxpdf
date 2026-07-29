@@ -16,6 +16,7 @@
 
 <script lang="ts">
   import { DONATE_LABEL, getDonateUrl } from "$lib/core/donate";
+  import { GITHUB_REPO_URL } from "$lib/core/site";
 
   let { year = new Date().getFullYear() } = $props();
 </script>
@@ -23,10 +24,17 @@
 <footer class="app-footer" style="position: sticky; bottom: 0;">
   <div class="footer-inner">
     <span class="footer-copyright"
-      >&copy; {year} DOCxPDF. Free forever.</span
+      >&copy; {year} DOCxPDF. Free forever. Open source.</span
     >
     <nav class="footer-nav">
       <a href="/about" class="footer-link">About</a>
+      <span class="footer-dot">&middot;</span>
+      <a
+        href={GITHUB_REPO_URL}
+        class="footer-link"
+        target="_blank"
+        rel="noopener noreferrer">GitHub</a
+      >
       <span class="footer-dot">&middot;</span>
       <a href="/privacy" class="footer-link">Privacy</a>
       <span class="footer-dot">&middot;</span>

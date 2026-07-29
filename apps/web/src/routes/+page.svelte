@@ -17,6 +17,7 @@
 <script lang="ts">
   import TopBar from "$lib/components/layout/TopBar.svelte";
   import { DONATE_LABEL, getDonateUrl } from "$lib/core/donate";
+  import { GITHUB_REPO_URL } from "$lib/core/site";
   import { showToast } from "$lib/utils/helpers";
 
   let openFaq = $state<string | null>(null);
@@ -31,6 +32,11 @@
       question: "Is DOCxPDF free?",
       answer:
         "Yes — fully free forever. Unlimited pages, exports (PDF, DOCX, HTML, DXP), templates, and AI document generation with your own API key (BYOK). If you want to support development, you can tip via the Donate link (pay what you wish).",
+    },
+    {
+      question: "Is DOCxPDF open source?",
+      answer:
+        "Yes. DOCxPDF is open source under the Apache License 2.0. The code is on GitHub at github.com/prashant-shahi/docxpdf — star it, file issues, or contribute.",
     },
     {
       question: "Can I use AI to help write or edit content?",
@@ -101,6 +107,12 @@
           <div class="eyebrow-line"></div>
           <span class="badge">Early Access</span>
           <span class="badge amber">Free Forever</span>
+          <a
+            href={GITHUB_REPO_URL}
+            class="badge badge-link"
+            target="_blank"
+            rel="noopener noreferrer">Open Source</a
+          >
         </div>
 
         <h1>
@@ -119,10 +131,16 @@
             Start editing free &rarr;
           </a>
           <a href="/documents" class="btn btn-ghost">My Documents</a>
+          <a
+            href={GITHUB_REPO_URL}
+            class="btn btn-ghost"
+            target="_blank"
+            rel="noopener noreferrer">GitHub</a
+          >
         </div>
 
         <p class="hero-note">
-          Fully in-browser &middot; No account needed &middot; Your documents stay on your device
+          Fully in-browser &middot; No account needed &middot; Open source (Apache-2.0) &middot; Your documents stay on your device
         </p>
 
         <div class="feature-strip">
@@ -480,6 +498,13 @@
     background: var(--color-bg-subtle);
     color: var(--color-text-secondary);
     border-color: var(--color-border);
+  }
+  a.badge-link {
+    text-decoration: none;
+    cursor: pointer;
+  }
+  a.badge-link:hover {
+    filter: brightness(0.95);
   }
 
   /* ── Buttons ── */
