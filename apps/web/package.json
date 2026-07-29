@@ -13,7 +13,7 @@
         "test:e2e:ui": "svelte-kit sync && playwright test --ui",
         "test:coverage": "vitest run --coverage",
         "lint": "prettier --check . && eslint .",
-        "svelte-check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+        "svelte-check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --tsgo",
         "format": "prettier --write ."
     },
     "devDependencies": {
@@ -24,6 +24,8 @@
         "@testing-library/jest-dom": "^7.0.0",
         "@testing-library/svelte": "^5.4.2",
         "@types/node": "^26.1.2",
+        "@typescript/native": "npm:typescript@7.0.2",
+        "@typescript/native-preview": "npm:typescript@7.0.2",
         "@vitest/coverage-v8": "^4.1.10",
         "autoprefixer": "^10.5.4",
         "concurrently": "^10.0.4",
@@ -33,12 +35,12 @@
         "prettier": "^3.9.6",
         "prettier-plugin-svelte": "^4.1.1",
         "svelte": "^5.56.8",
-        "svelte-check": "^4.7.4",
+        "svelte-check": "4.7.4",
         "tailwindcss": "^3.4.17",
-        "typescript": "^5.8.2",
-        "wrangler": "^4.115.0",
+        "typescript": "~6.0.2",
         "vite": "^8.1.5",
-        "vitest": "^3.2.6"
+        "vitest": "^3.2.6",
+        "wrangler": "^4.115.0"
     },
     "dependencies": {
         "@docxpdf/engine": "workspace:*",
