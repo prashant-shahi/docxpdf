@@ -1,15 +1,10 @@
 # Ref: https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+# pnpm workspace: one lockfile at repo root — do not use /apps/web or /packages/* as
+# separate ecosystems (that updates package.json without root pnpm-lock.yaml).
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/apps/web"
-    schedule:
-      interval: "weekly"
-  - package-ecosystem: "npm"
-    directory: "/packages/engine"
-    schedule:
-      interval: "weekly"
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 10
