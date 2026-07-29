@@ -35,7 +35,6 @@ jobs:
         permissions:
             contents: read
             packages: write
-            pull-requests: write
         steps:
             - uses: actions/checkout@v4
 
@@ -96,45 +95,3 @@ jobs:
                     echo "Pushing $tag"
                     docker push "$tag"
                   done
-
-            - name: Comment on PR
-              if: github.event_name == 'pull_request'
-              uses: actions/github-script@v7
-              with:
-                  script: |
-                      const image = `${{ steps.image.outputs.name }}:pr-${{ github.event.pull_request.number }}`;
-                      const body = [
-                        '### Docker image (GHCR)',
-                        '',
-                        `\`${image}\``,
-                        '',
-                        '```bash',
-                        `docker pull ${image}`,
-                        `docker run --rm -p 8080:80 ${image}`,
-                        '```',
-                        '',
-                        'Built because this PR has the `build-image` label.',
-                        'The tag is removed when the label is removed or the PR is closed.',
-                      ].join('\n');
-                      const { data: comments } = await github.rest.issues.listComments({
-                        owner: context.repo.owner,
-                        repo: context.repo.repo,
-                        issue_number: context.issue.number,
-                      });
-                      const marker = '### Docker image (GHCR)';
-                      const existing = comments.find(c => c.user?.type === 'Bot' && c.body?.includes(marker));
-                      if (existing) {
-                        await github.rest.issues.updateComment({
-                          owner: context.repo.owner,
-                          repo: context.repo.repo,
-                          comment_id: existing.id,
-                          body,
-                        });
-                      } else {
-                        await github.rest.issues.createComment({
-                          owner: context.repo.owner,
-                          repo: context.repo.repo,
-                          issue_number: context.issue.number,
-                          body,
-                        });
-                      }
