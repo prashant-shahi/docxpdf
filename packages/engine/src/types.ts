@@ -120,6 +120,47 @@ export type CanvasElement =
   | GroupElement
   | TableElement;
 
+/** Page content margins in CSS pixels (from page edges). */
+export interface PageMargins {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}
+
+/** Ruler-style guide on the page. */
+export interface GuideLine {
+  id: string;
+  orientation: "horizontal" | "vertical";
+  /** Offset from top (horizontal) or left (vertical) in CSS px. */
+  position: number;
+}
+
+/** Single header/footer text slot. Supports tokens: {{page}} {{pages}} {{title}}. */
+export interface ChromeTextSlot {
+  content: string;
+  fontSize?: number;
+  fontFamily?: string;
+  color?: string;
+  bold?: boolean;
+  italic?: boolean;
+}
+
+export interface PageChromeBand {
+  enabled: boolean;
+  /** Band height in CSS px (content sits outside this zone visually for design). */
+  height: number;
+  left?: ChromeTextSlot;
+  center?: ChromeTextSlot;
+  right?: ChromeTextSlot;
+}
+
+/** Shared header/footer chrome rendered on every page. */
+export interface PageChrome {
+  header?: PageChromeBand;
+  footer?: PageChromeBand;
+}
+
 export interface CanvasDocumentState {
   version?: number;
   pageLayout: {
@@ -129,6 +170,12 @@ export interface CanvasDocumentState {
   };
   pageElements: Record<string, CanvasElement[]>;
   nextId?: number;
+  /** Soft margins for overlays + snap (default 40). */
+  margins?: PageMargins;
+  /** User/custom guides. */
+  guides?: GuideLine[];
+  /** Headers, footers, page numbers. */
+  chrome?: PageChrome;
 }
 
 export interface DocumentRecord {
