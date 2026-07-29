@@ -30,7 +30,7 @@
         "fake-indexeddb": "^6.2.5",
         "jsdom": "^26.1.0",
         "postcss": "^8.5.18",
-        "prettier": "^3.5.3",
+        "prettier": "^3.9.6",
         "prettier-plugin-svelte": "^4.1.1",
         "svelte": "^5.25.3",
         "svelte-check": "^4.7.4",
