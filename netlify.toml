@@ -1,10 +1,11 @@
-# Static SPA — publish SvelteKit adapter-static output
+# Static SPA from pnpm monorepo (root lockfile + apps/web)
 [build]
-  command = "corepack enable && cd apps/web && pnpm install && pnpm build"
+  command = "corepack enable && corepack prepare pnpm@10 --activate && pnpm install --frozen-lockfile && pnpm --dir apps/web build"
   publish = "apps/web/dist"
 
 [build.environment]
-  NODE_VERSION = "20"
+  NODE_VERSION = "22"
+  NPM_FLAGS = "--version" # prefer corepack/pnpm over npm
 
 # SPA fallback (adapter also emits index.html fallback)
 [[redirects]]
