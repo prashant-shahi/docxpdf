@@ -73,24 +73,7 @@
             <p>
               The entire editor - rendering, file parsing, export engine - runs
               as client-side JavaScript. There is no server processing your
-              documents. The only external call is optional AI Assist, which
-              goes directly from your browser to the provider you chose.
-            </p>
-          </div>
-
-          <div class="pillar-card">
-            <div
-              class="pillar-icon"
-              style="background: var(--color-warning-bg);"
-            >
-              🚪
-            </div>
-            <h3>No Account</h3>
-            <p>
-              There is no user system. No sign-up, no login, no password to
-              steal. Every visitor is anonymous. Your documents have no owner
-              because there's nothing to own them - they simply live on your
-              device until you clear them.
+              documents, no account system, and no backend holding your work.
             </p>
           </div>
 
@@ -107,6 +90,22 @@
               your browser keeps offline data. They live on your disk, not ours.
               Clear your browser data and they're gone. We cannot restore them
               because we never had them.
+            </p>
+          </div>
+
+          <div class="pillar-card">
+            <div
+              class="pillar-icon"
+              style="background: var(--color-warning-bg);"
+            >
+              🔑
+            </div>
+            <h3>AI BYOK</h3>
+            <p>
+              AI is optional and Bring Your Own Key. Your API key and prompts
+              go from your browser straight to the provider you choose - never
+              through DOCxPDF servers. We never see your key or your document
+              content.
             </p>
           </div>
         </div>
