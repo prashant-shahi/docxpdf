@@ -528,22 +528,6 @@
     font-family: var(--font-body);
   }
 
-  .does-not-exist-badge {
-    position: absolute;
-    top: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--color-primary);
-    color: white;
-    font-size: 9px;
-    font-weight: 800;
-    padding: 2px 7px;
-    border-radius: 3px;
-    white-space: nowrap;
-    letter-spacing: 0.04em;
-    font-family: var(--font-heading);
-  }
-
   /* ── AI Assist callout ── */
   .ai-callout-section {
     margin-top: 24px;

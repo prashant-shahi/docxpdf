@@ -767,17 +767,6 @@
     margin: 0;
   }
 
-  .pricing-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    margin-top: 32px;
-  }
-  @media (max-width: 640px) {
-    .pricing-grid {
-      grid-template-columns: 1fr;
-    }
-  }
   @media (max-width: 700px) {
     .compare-grid {
       grid-template-columns: 1fr;
