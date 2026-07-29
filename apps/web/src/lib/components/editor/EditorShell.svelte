@@ -117,6 +117,22 @@
     hasUnsavedChanges = false;
   }
 
+  /** Persistable document fields (P1 chrome / margins / guides included). */
+  function documentPayload(state: typeof $canvasStore, canvasState: ReturnType<typeof getCanvasState>) {
+    return {
+      pageLayout: {
+        size: canvasState.pageLayout.size,
+        orientation: canvasState.pageLayout.orientation,
+        bgColor: canvasState.pageLayout.bgColor,
+      },
+      pageElements: state.pageElements,
+      nextId: state.nextId,
+      margins: state.margins,
+      guides: state.guides,
+      chrome: state.chrome,
+    };
+  }
+
   // Warn on SPA navigation
   beforeNavigate(({ to, cancel }) => {
     if (hasUnsavedChanges) {
@@ -169,6 +185,12 @@
         redoStack: [],
         activePage: 0,
         pageCount: 1,
+        margins: { top: 40, right: 40, bottom: 40, left: 40 },
+        guides: [],
+        chrome: {},
+        showMargins: true,
+        snapEnabled: true,
+        activeSnapGuides: [],
       });
 
       const urlParams = new URLSearchParams(window.location.search);
@@ -236,6 +258,17 @@
                   redoStack: [],
                   activePage: 0,
                   pageCount: Math.max(1, Object.keys(pageElements).length),
+                  margins: docData.margins ?? {
+                    top: 40,
+                    right: 40,
+                    bottom: 40,
+                    left: 40,
+                  },
+                  guides: docData.guides ?? [],
+                  chrome: docData.chrome ?? {},
+                  showMargins: true,
+                  snapEnabled: true,
+                  activeSnapGuides: [],
                 });
                 markSaved();
               });
@@ -447,15 +480,7 @@
       await saveDocument({
         id: docId,
         title: docTitle,
-        data: {
-          pageLayout: {
-            size: canvasState.pageLayout.size,
-            orientation: canvasState.pageLayout.orientation,
-            bgColor: canvasState.pageLayout.bgColor,
-          },
-          pageElements: state.pageElements,
-          nextId: state.nextId,
-        },
+        data: documentPayload(state, canvasState),
       });
     }
     goto("/document/new");
@@ -523,13 +548,8 @@
         id: saveId,
         title: docTitle,
         data: {
-          pageLayout: {
-            size: canvasState.pageLayout.size,
-            orientation: canvasState.pageLayout.orientation,
-            bgColor: canvasState.pageLayout.bgColor,
-          },
+          ...documentPayload(state, canvasState),
           pageElements: newPageElements,
-          nextId: state.nextId,
         },
       });
       docId = saved.id;
@@ -546,15 +566,7 @@
         const saved = await saveDocument({
           id: saveId,
           title: docTitle,
-          data: {
-            pageLayout: {
-              size: canvasState.pageLayout.size,
-              orientation: canvasState.pageLayout.orientation,
-              bgColor: canvasState.pageLayout.bgColor,
-            },
-            pageElements: state.pageElements,
-            nextId: state.nextId,
-          },
+          data: documentPayload(state, canvasState),
         });
         docId = saved.id;
         window.__docId = docId;
@@ -776,13 +788,27 @@
     {pageSize}
     {pageOrientation}
     {pageBgColor}
+    margins={$canvasStore.margins ?? { top: 40, right: 40, bottom: 40, left: 40 }}
+    chrome={$canvasStore.chrome ?? {}}
+    showMargins={$canvasStore.showMargins !== false}
+    snapEnabled={$canvasStore.snapEnabled !== false}
     onclose={() => (showPageSetup = false)}
-    onapply={(size, orientation, bgColor) => {
+    onapply={(v) => {
       setPageSize(
-        size as any,
-        orientation as "portrait" | "landscape",
-        bgColor,
+        v.size as any,
+        v.orientation as "portrait" | "landscape",
+        v.bgColor,
       );
+      canvasStore.update((s) => ({
+        ...s,
+        margins: v.margins,
+        chrome: v.chrome,
+        showMargins: v.showMargins,
+        snapEnabled: v.snapEnabled,
+      }));
+      pageSize = v.size;
+      pageOrientation = v.orientation;
+      pageBgColor = v.bgColor;
     }}
   />
 

@@ -36,6 +36,7 @@
     shapeLabel,
     selectionOutlineRadius,
   } from "$lib/core/shapes";
+  import { resolveChromeTokens } from "@docxpdf/engine";
 
   let {
     editingTextId = $bindable(null),
@@ -46,6 +47,19 @@
     readonly?: boolean;
     showAllPages?: boolean;
   } = $props();
+
+  function resolveChrome(
+    content: string | undefined,
+    pageIndex: number,
+    pageCount: number,
+  ): string {
+    if (!content) return "";
+    return resolveChromeTokens(content, {
+      pageIndex,
+      pageCount,
+      title: typeof document !== "undefined" ? (window as any).__docTitle : "",
+    });
+  }
 
   const pageDimensions = $derived.by(() => {
     const layout = $canvasStore.pageLayout;
@@ -878,10 +892,65 @@
         class="canvas-page bg-white relative shadow-[0_2px_12px_rgba(0,0,0,0.12),0_1px_4px_rgba(0,0,0,0.08)] flex-shrink-0"
         style="width:{pageDimensions.width}px;height:{pageDimensions.height}px;background:{pageDimensions.bgColor}"
       >
+        <!-- Margin / guide overlays (editor only) -->
+        {#if !readonly && $canvasStore.showMargins !== false}
+          {@const m = $canvasStore.margins ?? { top: 40, right: 40, bottom: 40, left: 40 }}
+          <div
+            class="page-margin-overlay"
+            style="position:absolute;inset:0;pointer-events:none;z-index:0;box-shadow:inset {m.left}px {m.top}px 0 0 rgba(22,119,255,0.06), inset -{m.right}px -{m.bottom}px 0 0 rgba(22,119,255,0.06);border:1px dashed rgba(22,119,255,0.35);border-width:{m.top}px {m.right}px {m.bottom}px {m.left}px;box-sizing:border-box"
+            aria-hidden="true"
+          ></div>
+        {/if}
+        {#if !readonly}
+          {#each [...($canvasStore.guides ?? []), ...($canvasStore.activeSnapGuides ?? [])] as g (g.id)}
+            {#if g.orientation === "vertical"}
+              <div
+                class="page-guide page-guide-v"
+                style="position:absolute;top:0;bottom:0;left:{g.position}px;width:0;border-left:1px solid {g.id.startsWith('snap-') ? 'var(--color-primary)' : 'rgba(255,64,129,0.75)'};pointer-events:none;z-index:9990"
+                aria-hidden="true"
+              ></div>
+            {:else}
+              <div
+                class="page-guide page-guide-h"
+                style="position:absolute;left:0;right:0;top:{g.position}px;height:0;border-top:1px solid {g.id.startsWith('snap-') ? 'var(--color-primary)' : 'rgba(255,64,129,0.75)'};pointer-events:none;z-index:9990"
+                aria-hidden="true"
+              ></div>
+            {/if}
+          {/each}
+        {/if}
+        <!-- Header / footer chrome -->
+        {#if $canvasStore.chrome}
+          {@const pageIdx = parseInt(pageKey, 10) || 0}
+          {@const pageCount = Object.keys($canvasStore.pageElements || {}).length || 1}
+          {@const m = $canvasStore.margins ?? { top: 40, right: 40, bottom: 40, left: 40 }}
+          {@const chrome = $canvasStore.chrome}
+          {#if chrome.header?.enabled}
+            {@const h = Math.max(12, chrome.header.height || 32)}
+            <div
+              class="page-chrome page-chrome-header"
+              style="position:absolute;left:{m.left}px;top:{m.top}px;width:{pageDimensions.width - m.left - m.right}px;height:{h}px;pointer-events:none;z-index:1;display:flex;align-items:center;justify-content:space-between;box-sizing:border-box"
+            >
+              <span class="chrome-slot" style="flex:1;text-align:left;font-size:{chrome.header.left?.fontSize ?? 10}px;font-family:{chrome.header.left?.fontFamily ?? 'Arial'};color:{chrome.header.left?.color ?? '#666'};font-weight:{chrome.header.left?.bold ? 'bold' : 'normal'}">{resolveChrome(chrome.header.left?.content, pageIdx, pageCount)}</span>
+              <span class="chrome-slot" style="flex:1;text-align:center;font-size:{chrome.header.center?.fontSize ?? 10}px;font-family:{chrome.header.center?.fontFamily ?? 'Arial'};color:{chrome.header.center?.color ?? '#666'};font-weight:{chrome.header.center?.bold ? 'bold' : 'normal'}">{resolveChrome(chrome.header.center?.content, pageIdx, pageCount)}</span>
+              <span class="chrome-slot" style="flex:1;text-align:right;font-size:{chrome.header.right?.fontSize ?? 10}px;font-family:{chrome.header.right?.fontFamily ?? 'Arial'};color:{chrome.header.right?.color ?? '#666'};font-weight:{chrome.header.right?.bold ? 'bold' : 'normal'}">{resolveChrome(chrome.header.right?.content, pageIdx, pageCount)}</span>
+            </div>
+          {/if}
+          {#if chrome.footer?.enabled}
+            {@const h = Math.max(12, chrome.footer.height || 28)}
+            <div
+              class="page-chrome page-chrome-footer"
+              style="position:absolute;left:{m.left}px;top:{pageDimensions.height - m.bottom - h}px;width:{pageDimensions.width - m.left - m.right}px;height:{h}px;pointer-events:none;z-index:1;display:flex;align-items:center;justify-content:space-between;box-sizing:border-box"
+            >
+              <span class="chrome-slot" style="flex:1;text-align:left;font-size:{chrome.footer.left?.fontSize ?? 10}px;font-family:{chrome.footer.left?.fontFamily ?? 'Arial'};color:{chrome.footer.left?.color ?? '#666'};font-weight:{chrome.footer.left?.bold ? 'bold' : 'normal'}">{resolveChrome(chrome.footer.left?.content, pageIdx, pageCount)}</span>
+              <span class="chrome-slot" style="flex:1;text-align:center;font-size:{chrome.footer.center?.fontSize ?? 10}px;font-family:{chrome.footer.center?.fontFamily ?? 'Arial'};color:{chrome.footer.center?.color ?? '#666'};font-weight:{chrome.footer.center?.bold ? 'bold' : 'normal'}">{resolveChrome(chrome.footer.center?.content, pageIdx, pageCount)}</span>
+              <span class="chrome-slot" style="flex:1;text-align:right;font-size:{chrome.footer.right?.fontSize ?? 10}px;font-family:{chrome.footer.right?.fontFamily ?? 'Arial'};color:{chrome.footer.right?.color ?? '#666'};font-weight:{chrome.footer.right?.bold ? 'bold' : 'normal'}">{resolveChrome(chrome.footer.right?.content, pageIdx, pageCount)}</span>
+            </div>
+          {/if}
+        {/if}
         <!-- Elements container — overflow hidden so elements don't visually bleed beyond page -->
         <div
           class="canvas-page-elements"
-          style="position:absolute;inset:0;overflow:hidden"
+          style="position:absolute;inset:0;overflow:hidden;z-index:2"
           onmousedown={(e) => !readonly && startMarquee(e, pageKey)}
         >
           {#each elements as el (el.id)}

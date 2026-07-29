@@ -19,6 +19,12 @@ import type { CanvasElement, ShapeElement } from "$lib/types/global";
 import { selectionOutlineRadius } from "$lib/core/shapes";
 import { canvasStore } from "$lib/stores/document";
 import { getCanvasPageScale } from "$lib/core/document";
+import {
+  collectSnapTargets,
+  snapElementPosition,
+  DEFAULT_SNAP_THRESHOLD,
+} from "@docxpdf/engine";
+import { get } from "svelte/store";
 
 export interface DragParams {
   element: CanvasElement;
@@ -131,8 +137,44 @@ export function draggable(node: HTMLElement, params: DragParams) {
         totalDx += event.dx;
         totalDy += event.dy;
         const scale = getCanvasPageScale(node);
-        const nx = startElX + totalDx / scale;
-        const ny = startElY + totalDy / scale;
+        let nx = startElX + totalDx / scale;
+        let ny = startElY + totalDy / scale;
+        const state = get(canvasStore);
+        if (state.snapEnabled !== false) {
+          const pageKey = String(state.activePage);
+          const pageEls = state.pageElements[pageKey] || [];
+          const dims = (
+            document.querySelector(
+              `.canvas-page-wrapper[data-page="${pageKey}"] .canvas-page`,
+            ) as HTMLElement | null
+          );
+          const pageW = dims?.offsetWidth || 595;
+          const pageH = dims?.offsetHeight || 842;
+          const targets = collectSnapTargets({
+            pageW,
+            pageH,
+            margins: state.margins,
+            guides: state.guides,
+            elements: pageEls,
+            excludeIds: state.selectedIds?.length
+              ? state.selectedIds
+              : [el.id],
+          });
+          const snapped = snapElementPosition(
+            nx,
+            ny,
+            el.width,
+            el.height,
+            targets,
+            DEFAULT_SNAP_THRESHOLD,
+          );
+          nx = snapped.x;
+          ny = snapped.y;
+          canvasStore.update((s) => ({
+            ...s,
+            activeSnapGuides: snapped.activeGuides,
+          }));
+        }
         el.x = nx;
         el.y = ny;
         node.style.left = nx + "px";
@@ -148,8 +190,40 @@ export function draggable(node: HTMLElement, params: DragParams) {
         if (ignoreDrag) { ignoreDrag = false; cleanGuide(); return; }
         cleanGuide();
         const scale = getCanvasPageScale(node);
-        const finalX = startElX + totalDx / scale;
-        const finalY = startElY + totalDy / scale;
+        let finalX = startElX + totalDx / scale;
+        let finalY = startElY + totalDy / scale;
+        const state = get(canvasStore);
+        if (state.snapEnabled !== false) {
+          const pageKey = String(state.activePage);
+          const pageEls = state.pageElements[pageKey] || [];
+          const dims = (
+            document.querySelector(
+              `.canvas-page-wrapper[data-page="${pageKey}"] .canvas-page`,
+            ) as HTMLElement | null
+          );
+          const pageW = dims?.offsetWidth || 595;
+          const pageH = dims?.offsetHeight || 842;
+          const targets = collectSnapTargets({
+            pageW,
+            pageH,
+            margins: state.margins,
+            guides: state.guides,
+            elements: pageEls,
+            excludeIds: state.selectedIds?.length
+              ? state.selectedIds
+              : [el.id],
+          });
+          const snapped = snapElementPosition(
+            finalX,
+            finalY,
+            el.width,
+            el.height,
+            targets,
+            DEFAULT_SNAP_THRESHOLD,
+          );
+          finalX = snapped.x;
+          finalY = snapped.y;
+        }
         const id = el.id;
         canvasStore.update((s) => {
           const pageKey = String(s.activePage);
@@ -157,7 +231,11 @@ export function draggable(node: HTMLElement, params: DragParams) {
             if (e.id !== id) return e;
             return { ...structuredClone(e), x: finalX, y: finalY };
           });
-          return { ...s, pageElements: { ...s.pageElements, [pageKey]: els } };
+          return {
+            ...s,
+            pageElements: { ...s.pageElements, [pageKey]: els },
+            activeSnapGuides: [],
+          };
         });
         el.x = finalX;
         el.y = finalY;
