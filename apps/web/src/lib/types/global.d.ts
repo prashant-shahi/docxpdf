@@ -38,9 +38,21 @@ export type {
   DocumentRecord,
   TableInsertData,
   VersionedSnapshot,
+  PageMargins,
+  GuideLine,
+  PageChrome,
+  PageChromeBand,
+  ChromeTextSlot,
 } from "@docxpdf/engine";
 
-import type { CanvasElement, CanvasDocumentState, PageSize } from "@docxpdf/engine";
+import type {
+  CanvasElement,
+  CanvasDocumentState,
+  PageSize,
+  PageMargins,
+  GuideLine,
+  PageChrome,
+} from "@docxpdf/engine";
 
 export interface UndoSnapshot {
   pageElements: Record<string, CanvasElement[]>;
@@ -103,6 +115,18 @@ export interface AppState {
   redoStack: UndoPatch[];
   activePage: number;
   pageCount: number;
+  /** Soft margins for overlay + snap (P1). */
+  margins?: PageMargins;
+  /** Custom guides (P1). */
+  guides?: GuideLine[];
+  /** Headers / footers / page numbers (P1). */
+  chrome?: PageChrome;
+  /** Live snap guides while dragging (UI-only, not persisted). */
+  activeSnapGuides?: GuideLine[];
+  /** Show margin overlays (UI preference). */
+  showMargins?: boolean;
+  /** Snap to guides/margins/elements while dragging. */
+  snapEnabled?: boolean;
 }
 
 export interface PageSizeMm {
