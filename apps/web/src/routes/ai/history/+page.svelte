@@ -414,12 +414,12 @@
                     <div class="gallery-thumb gallery-missing" aria-hidden="true"
                     ></div>
                   {/if}
-                  <figcaption class="gallery-caption"
-                    >{img.title || img.imageId}</figcaption
-                  >
                   {#if img.tone}
                     <span class="gallery-tone">{img.tone}</span>
                   {/if}
+                  <figcaption class="gallery-caption"
+                    >{img.title || img.imageId}</figcaption
+                  >
                 </figure>
               {/each}
             </div>
