@@ -15,12 +15,36 @@
  */
 
 import { PAGE_SIZES } from "./constants";
+import { chromeBandToHtml, resolvePageChrome } from "./page_chrome";
 import { isLineShape, lineBoxStyle, shapeBoxStyle } from "./shapes";
 import type {
   CanvasDocumentState,
   CanvasElement,
   ShapeElement,
 } from "./types";
+
+function renderChromeHtml(
+  state: CanvasDocumentState,
+  pageW: number,
+  pageH: number,
+  pageIndex: number,
+  pageCount: number,
+): string {
+  const resolved = resolvePageChrome(
+    state.chrome,
+    pageH,
+    { pageIndex, pageCount, title: undefined },
+    state.margins,
+  );
+  let html = "";
+  if (resolved.header) {
+    html += chromeBandToHtml(resolved.header, pageW, state.margins);
+  }
+  if (resolved.footer) {
+    html += chromeBandToHtml(resolved.footer, pageW, state.margins);
+  }
+  return html;
+}
 
 export interface BuildPrintHtmlOptions {
   resolveImageSrc?: (
@@ -135,15 +159,17 @@ function buildPrintHtmlSync(
     (a, b) => Number(a) - Number(b),
   );
 
+  const pageCount = pageKeys.length || 1;
   const pages = pageKeys
-    .map((key) => {
+    .map((key, pageIndex) => {
       const els = state.pageElements[key] ?? [];
       const body = els
         .map((el) =>
           elementToHtml(el, el.type === "image" ? resolved.get(el.id) ?? el.src : undefined),
         )
         .join("\n");
-      return `<div class="page" style="width:${pw}px;height:${ph}px;background:${bg}">${body}</div>`;
+      const chromeHtml = renderChromeHtml(state, pw, ph, pageIndex, pageCount);
+      return `<div class="page" style="width:${pw}px;height:${ph}px;background:${bg}">${chromeHtml}${body}</div>`;
     })
     .join("");
 
