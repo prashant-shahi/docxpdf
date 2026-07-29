@@ -95,23 +95,31 @@ make deploy    # wrangler deploy (Workers static assets)
 
 ### Docker (self-host)
 
-The image is **nginx + static files only** (no Node toolchain). Build the SPA first, then pack `apps/web/dist`:
+The image is **nginx + static files only** (no Node toolchain). CI builds the SPA, then pushes to **GitHub Container Registry**:
 
 ```bash
-make docker-build   # runs `make build`, then docker build
+docker pull ghcr.io/prashant-shahi/docxpdf:latest
+docker run --rm -p 8080:80 ghcr.io/prashant-shahi/docxpdf:latest
+# http://localhost:8080
+```
+
+Tags: `latest` (default branch), `sha-<short>`, and version tags on `v*` releases. Package: [ghcr.io/prashant-shahi/docxpdf](https://github.com/prashant-shahi/docxpdf/pkgs/container/docxpdf).
+
+Local build / run:
+
+```bash
+make docker-build   # make build → docker build
 make docker-run     # http://localhost:8080
 ```
 
-Or step by step:
+Push to GHCR from your machine (`gh` must be logged in with `write:packages`):
 
 ```bash
-make build
-docker build -t docxpdf:local .
-docker run --rm -p 8080:80 docxpdf:local
+make docker-login   # echo "$(gh auth token)" | docker login ghcr.io -u "$(gh api user -q .login)" --password-stdin
+make docker-push    # build + push :latest and :sha-<short>
 ```
 
-CI can run the same: install → `make build` → `docker build` / push. Runtime image stays small (~nginx alpine + assets).
-
+CI pushes on `main` / version tags (`.github/workflows/docker.yml`) with the default **`GITHUB_TOKEN`** (`packages: write`). Link the package to this repo and grant Actions **Write** under package settings → Manage Actions access.
 ### Any static host
 
 ```bash

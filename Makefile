@@ -14,7 +14,7 @@
 
 WEB_DIR := apps/web
 TOOLS_DIR := .tools
-.PHONY: help ts svelte-check tools urls build install dev preview test test-e2e coverage ci clean deploy docker-build docker-run
+.PHONY: help ts svelte-check tools urls build install dev preview test test-e2e coverage ci clean deploy docker-build docker-run docker-login docker-push
 
 help:
 	@echo "╔═══════════════════════════════════════════════════════════════════════════╗"
@@ -33,6 +33,8 @@ help:
 	@echo "║  make deploy               Build + deploy to Cloudflare Workers           ║"
 	@echo "║  make docker-build         Build SPA then nginx-only Docker image         ║"
 	@echo "║  make docker-run           Run container on http://localhost:8080         ║"
+	@echo "║  make docker-login         Log in to ghcr.io (needs gh auth)              ║"
+	@echo "║  make docker-push          Build + push image to ghcr.io/<owner>/docxpdf  ║"
 	@echo "║  make clean                Remove caches, node_modules, .tools/           ║"
 	@echo "╚═══════════════════════════════════════════════════════════════════════════╝"
 
@@ -88,12 +90,27 @@ deploy: build
 	pnpm exec wrangler deploy
 
 # Image is nginx + apps/web/dist only (no Node). SPA is built on the host/CI first.
+GHCR_IMAGE ?= ghcr.io/prashant-shahi/docxpdf
+
 docker-build: build
 	@test -f $(WEB_DIR)/dist/index.html || (echo "missing $(WEB_DIR)/dist — build failed?" && exit 1)
-	docker build -t docxpdf:local .
+	docker build -t docxpdf:local -t $(GHCR_IMAGE):local .
 
 docker-run: docker-build
 	docker run --rm -p 8080:80 docxpdf:local
+
+# Local GHCR auth (PAT via gh — needs write:packages)
+docker-login:
+	echo "$$(gh auth token)" | docker login ghcr.io -u "$$(gh api user -q .login)" --password-stdin
+
+# Push :latest and :sha-<short> (run docker-login first if needed)
+docker-push: docker-build docker-login
+	@SHA=$$(git rev-parse --short HEAD); \
+	docker tag docxpdf:local $(GHCR_IMAGE):latest; \
+	docker tag docxpdf:local $(GHCR_IMAGE):sha-$$SHA; \
+	docker push $(GHCR_IMAGE):latest; \
+	docker push $(GHCR_IMAGE):sha-$$SHA; \
+	echo "Pushed $(GHCR_IMAGE):latest and $(GHCR_IMAGE):sha-$$SHA"
 
 clean:
 	rm -rf $(WEB_DIR)/node_modules $(WEB_DIR)/dist $(WEB_DIR)/.svelte-kit $(TOOLS_DIR) .wrangler

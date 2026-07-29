@@ -1,4 +1,8 @@
-# Build static SPA in CI, then pack an nginx-only image (no Node in the final image).
+# Build static SPA in CI, pack nginx-only image, push to GHCR.
+# Image: ghcr.io/<owner>/<repo>  (e.g. ghcr.io/prashant-shahi/docxpdf)
+#
+# Uses GITHUB_TOKEN (packages: write). Package must be linked to this repo with
+# Actions access Write: Package settings → Manage Actions access.
 name: Docker
 
 on:
@@ -19,7 +23,7 @@ on:
             - ".github/workflows/docker.yml"
 
 env:
-    IMAGE_NAME: docxpdf
+    REGISTRY: ghcr.io
 
 jobs:
     image:
@@ -43,36 +47,56 @@ jobs:
             - name: Build static SPA
               run: make build
 
-            - name: Set image tags
-              id: meta
+            - name: Image name (lowercase)
+              id: image
               run: |
-                  REPO_LC=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-                  echo "repo=${REPO_LC}" >> "$GITHUB_OUTPUT"
-                  if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-                    echo "tags=ghcr.io/${REPO_LC}:latest,ghcr.io/${REPO_LC}:${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
-                  else
-                    SHA_SHORT=$(echo "${{ github.sha }}" | cut -c1-7)
-                    echo "tags=ghcr.io/${REPO_LC}:sha-${SHA_SHORT}" >> "$GITHUB_OUTPUT"
-                  fi
+                  echo "name=${REGISTRY}/$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
 
-            - name: Build Docker image
+            - name: Compute tags
+              id: tags
               run: |
-                  docker build -t "${{ env.IMAGE_NAME }}:ci" .
-                  docker images "${{ env.IMAGE_NAME }}:ci"
+                  NAME="${{ steps.image.outputs.name }}"
+                  SHA_SHORT=$(echo "${{ github.sha }}" | cut -c1-7)
+                  TAGS=()
+                  if [ "${{ github.event_name }}" = "pull_request" ]; then
+                    TAGS+=("${NAME}:pr-${{ github.event.pull_request.number }}")
+                  else
+                    TAGS+=("${NAME}:sha-${SHA_SHORT}")
+                    if [ "${{ github.ref }}" = "refs/heads/main" ] || [ "${{ github.ref }}" = "refs/heads/master" ]; then
+                      TAGS+=("${NAME}:latest")
+                    fi
+                    if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+                      TAGS+=("${NAME}:${{ github.ref_name }}")
+                      TAGS+=("${NAME}:latest")
+                    fi
+                  fi
+                  # comma-separated for docker tag loop
+                  IFS=','; echo "list=${TAGS[*]}" >> "$GITHUB_OUTPUT"
+                  echo "primary=${TAGS[0]}" >> "$GITHUB_OUTPUT"
+                  printf 'tags:\n'
+                  printf '  %s\n' "${TAGS[@]}"
 
             - name: Log in to GHCR
-              if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
+              if: github.event_name != 'pull_request'
               uses: docker/login-action@v3
               with:
-                  registry: ghcr.io
+                  registry: ${{ env.REGISTRY }}
                   username: ${{ github.actor }}
                   password: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Push image
-              if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/'))
+            # Classic docker build/push (no Buildx) — more reliable with GHCR
+            - name: Build image
               run: |
-                  IFS=',' read -ra TAGS <<< "${{ steps.meta.outputs.tags }}"
+                  docker build -t "${{ steps.tags.outputs.primary }}" .
+                  docker images "${{ steps.image.outputs.name }}"
+
+            - name: Tag and push
+              if: github.event_name != 'pull_request'
+              run: |
+                  PRIMARY="${{ steps.tags.outputs.primary }}"
+                  IFS=',' read -ra TAGS <<< "${{ steps.tags.outputs.list }}"
                   for tag in "${TAGS[@]}"; do
-                    docker tag "${{ env.IMAGE_NAME }}:ci" "$tag"
+                    docker tag "$PRIMARY" "$tag"
+                    echo "Pushing $tag"
                     docker push "$tag"
                   done
