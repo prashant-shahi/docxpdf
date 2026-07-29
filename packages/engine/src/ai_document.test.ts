@@ -18,10 +18,13 @@ import { describe, it, expect } from "vitest";
 import {
   extractJsonPayload,
   normalizeAIDocument,
+  effectiveBackgroundAt,
   AI_DOCUMENT_SCHEMA_PROMPT,
   AI_DOC_MAX_ELEMENTS,
   AI_DOC_MAX_PAGES,
 } from "./ai_document";
+import { blendOver, parseCssAlpha } from "./color_contrast";
+import type { ShapeElement } from "./types";
 import { PAGE_SIZES } from "./constants";
 import { CURRENT_VERSION } from "./migrate";
 
@@ -584,6 +587,49 @@ describe("AI_DOCUMENT_SCHEMA_PROMPT", () => {
     expect(AI_DOCUMENT_SCHEMA_PROMPT).toMatch(/Layout \/ stacking/i);
     expect(AI_DOCUMENT_SCHEMA_PROMPT).toMatch(/MUST NOT overlay/i);
     expect(AI_DOCUMENT_SCHEMA_PROMPT).toMatch(/transparent/i);
+    expect(AI_DOCUMENT_SCHEMA_PROMPT).toMatch(/SEMI-TRANSPARENT|opacity/i);
+    expect(AI_DOCUMENT_SCHEMA_PROMPT).toMatch(/Design aesthetics/i);
+    expect(AI_DOCUMENT_SCHEMA_PROMPT).toMatch(/resume|invoice|flyer/i);
     expect(AI_DOCUMENT_SCHEMA_PROMPT).not.toMatch(/"group"/);
+  });
+});
+
+describe("translucent background contrast helpers", () => {
+  it("parseCssAlpha reads rgba and #rrggbbaa", () => {
+    expect(parseCssAlpha("rgba(0,0,0,0.25)")).toBeCloseTo(0.25);
+    expect(parseCssAlpha("#11223380")).toBeCloseTo(128 / 255, 2);
+    expect(parseCssAlpha("#fff")).toBe(1);
+  });
+
+  it("blendOver mixes tint over page", () => {
+    const mid = blendOver("#0000ff", "#ffffff", 0.5);
+    expect(mid).toMatch(/^#[0-9a-f]{6}$/i);
+    // blue channel should dominate over red/green when blending blue on white
+    const r = parseInt(mid.slice(1, 3), 16);
+    const b = parseInt(mid.slice(5, 7), 16);
+    expect(b).toBeGreaterThan(r);
+  });
+
+  it("effectiveBackgroundAt composites shape opacity over page", () => {
+    const shape = {
+      id: 1,
+      type: "shape",
+      x: 0,
+      y: 0,
+      width: 200,
+      height: 200,
+      rotation: 0,
+      opacity: 0.5,
+      zIndex: 0,
+      shapeType: "rounded",
+      fillColor: "#0000ff",
+      borderColor: "transparent",
+      borderWidth: 0,
+    } as ShapeElement;
+    const behind = effectiveBackgroundAt([shape], "#ffffff", 50, 50);
+    expect(behind).toMatch(/^#[0-9a-f]{6}$/i);
+    // Not pure white and not pure blue
+    expect(behind.toLowerCase()).not.toBe("#ffffff");
+    expect(behind.toLowerCase()).not.toBe("#0000ff");
   });
 });
