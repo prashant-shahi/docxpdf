@@ -28,7 +28,7 @@
         "autoprefixer": "^10.5.4",
         "concurrently": "^10.0.4",
         "fake-indexeddb": "^6.2.5",
-        "jsdom": "^26.1.0",
+        "jsdom": "^30.0.1",
         "postcss": "^8.5.25",
         "prettier": "^3.9.6",
         "prettier-plugin-svelte": "^4.1.1",
