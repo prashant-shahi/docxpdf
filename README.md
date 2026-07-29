@@ -77,12 +77,16 @@ cd apps/web && pnpm exec vitest run
 
 Output is a static SPA: `apps/web/dist` (SvelteKit `@sveltejs/adapter-static`).
 
-### One-click (fork)
+### One-click (your own copy)
 
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/prashant-shahi/docxpdf)
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/prashant-shahi/docxpdf)
+These buttons **clone this repo into your GitHub account** and deploy under **your** Netlify/Vercel project. You do **not** need to own or fork `prashant-shahi/docxpdf` first — sign in, authorize, and deploy.
 
-Config: `netlify.toml`, `vercel.json` (build `apps/web`, publish `apps/web/dist`).
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)][netlifydeploy]
+[![Deploy with Vercel](https://vercel.com/button)][verceldeploy]
+
+No env vars required. Config: `netlify.toml`, `vercel.json` (install at repo root, build/publish `apps/web`).
+
+> **Heroku:** not offered. Heroku’s free tier was removed; Eco/Basic are paid. Prefer Netlify, Vercel, Cloudflare, or Docker.
 
 ### Cloudflare (maintainer / Wrangler)
 
@@ -140,3 +144,6 @@ make build
 ## License
 
 [Apache License 2.0](./LICENSE)
+
+[netlifydeploy]: https://app.netlify.com/start/deploy?repository=https://github.com/prashant-shahi/docxpdf
+[verceldeploy]: https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fprashant-shahi%2Fdocxpdf&project-name=docxpdf&repository-name=docxpdf
