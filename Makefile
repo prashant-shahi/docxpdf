@@ -14,7 +14,7 @@
 
 WEB_DIR := apps/web
 TOOLS_DIR := .tools
-.PHONY: help ts svelte-check tools urls build install dev preview test test-e2e coverage ci clean deploy
+.PHONY: help ts svelte-check tools urls build install dev preview test test-e2e coverage ci clean deploy docker-build docker-run
 
 help:
 	@echo "╔═══════════════════════════════════════════════════════════════════════════╗"
@@ -31,6 +31,8 @@ help:
 	@echo "║  make test-e2e             Run Playwright e2e tests                       ║"
 	@echo "║  make coverage             Run tests with coverage report                 ║"
 	@echo "║  make deploy               Build + deploy to Cloudflare Workers           ║"
+	@echo "║  make docker-build         Build local Docker image (nginx static)        ║"
+	@echo "║  make docker-run           Run container on http://localhost:8080         ║"
 	@echo "║  make clean                Remove caches, node_modules, .tools/           ║"
 	@echo "╚═══════════════════════════════════════════════════════════════════════════╝"
 
@@ -84,6 +86,12 @@ ci: ci-frontend
 
 deploy: build
 	pnpm exec wrangler deploy
+
+docker-build:
+	docker build -t docxpdf:local .
+
+docker-run: docker-build
+	docker run --rm -p 8080:80 docxpdf:local
 
 clean:
 	rm -rf $(WEB_DIR)/node_modules $(WEB_DIR)/dist $(WEB_DIR)/.svelte-kit $(TOOLS_DIR) .wrangler

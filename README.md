@@ -75,11 +75,39 @@ cd apps/web && pnpm exec vitest run
 
 ## Deploy
 
-Static SPA (`@sveltejs/adapter-static`) served as Cloudflare Workers **assets-only**:
+Output is a static SPA: `apps/web/dist` (SvelteKit `@sveltejs/adapter-static`).
+
+### One-click (fork)
+
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/prashant-shahi/docxpdf)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/prashant-shahi/docxpdf)
+
+Config: `netlify.toml`, `vercel.json` (build `apps/web`, publish `apps/web/dist`).
+
+### Cloudflare (maintainer / Wrangler)
+
+Requires a logged-in [Wrangler](https://developers.cloudflare.com/workers/wrangler/) account:
 
 ```bash
 make build
-make deploy
+make deploy    # wrangler deploy (Workers static assets)
+```
+
+### Docker (self-host)
+
+```bash
+make docker-build
+make docker-run    # http://localhost:8080
+# or: docker build -t docxpdf . && docker run --rm -p 8080:80 docxpdf
+```
+
+Serves `apps/web/dist` behind nginx. Image is build-only + static files — no Node in the runtime container.
+
+### Any static host
+
+```bash
+make build
+# upload apps/web/dist/  (enable SPA fallback to index.html)
 ```
 
 ## License
