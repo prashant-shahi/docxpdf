@@ -25,7 +25,7 @@
     type CanvasZoomMode,
   } from "$lib/core/document";
 
-  let zoomMode = $state<CanvasZoomMode>(1);
+  let zoomMode = $state<CanvasZoomMode>("fit");
   let appliedScale = $state(1);
   let menuOpen = $state(false);
 

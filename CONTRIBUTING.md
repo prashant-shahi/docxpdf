@@ -37,9 +37,11 @@ Before opening a PR, `make ci` should pass.
 
 ## Print / PDF zoom (important)
 
-PDF export uses the browser print pipeline. In `apps/web/src/app.css`, `@media print` sets `zoom: 1.33` so output matches physical page sizes (96 DPI screen → 72 DPI PostScript).
+PDF export uses the browser print pipeline. In `apps/web/src/app.css`, `@media print` sets `zoom: 1.33` on **`html` only** so output matches physical page sizes (96 DPI screen → 72 DPI PostScript).
 
 **Do not change that value casually** — wrong zoom breaks A4/Letter alignment in exported PDFs.
+
+**Do not also set `zoom` on `body`** — nested zoom compounds in Chromium (~1.77×), overflows `@page`, and produces a blank second sheet.
 
 ## Secrets and local files
 

@@ -108,7 +108,8 @@ function shapeClipPath(shapeType: string): string | null {
 }
 
 function shapeBorderRadius(shapeType: string): string | null {
-  if (shapeType === "circle") return "50%";
+  // Circles use clip-path (see shapeBoxStyle) — border-radius:50% looks squashed
+  // under print zoom and when clipped at the page edge.
   if (shapeType === "rounded") return "12px";
   return null;
 }
@@ -131,6 +132,24 @@ export function shapeBoxStyle(el: ShapeElement): string {
     "print-color-adjust:exact",
     `background:${fill}`,
   ];
+
+  // Geometric circle clips cleanly under print zoom / page overflow (unlike border-radius).
+  if (st === "circle") {
+    parts.push(
+      "border-radius:0",
+      "clip-path:circle(50% at 50% 50%)",
+      "-webkit-clip-path:circle(50% at 50% 50%)",
+    );
+    if (el.borderWidth && el.borderColor) {
+      // Border on a clip-path circle is unreliable; approximate with box-shadow ring
+      parts.push(
+        `box-shadow:0 0 0 ${el.borderWidth}px ${el.borderColor}`,
+      );
+    } else {
+      parts.push("border:none");
+    }
+    return parts.join(";");
+  }
 
   const clip = shapeClipPath(st);
   if (clip) {

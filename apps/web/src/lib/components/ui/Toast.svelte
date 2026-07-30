@@ -32,7 +32,9 @@
 
 {#if visible}
   <div
-    class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-lg text-white text-sm shadow-lg transition-opacity duration-300"
+    class="docxpdf-toast fixed bottom-8 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-lg text-white text-sm shadow-lg transition-opacity duration-300"
+    data-docxpdf-toast={type}
+    role="status"
     style:background-color={type === "info"
       ? "var(--color-text)"
       : type === "success"
