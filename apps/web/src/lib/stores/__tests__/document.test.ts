@@ -34,6 +34,11 @@ function defaultState(): AppState {
     redoStack: [],
     activePage: 0,
     pageCount: 1,
+    margins: { top: 40, right: 40, bottom: 40, left: 40 },
+    guides: [],
+    chrome: {},
+    showMargins: true,
+    snapEnabled: true,
   };
 }
 

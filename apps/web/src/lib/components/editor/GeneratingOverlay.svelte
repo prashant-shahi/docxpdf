@@ -15,7 +15,6 @@
 -->
 
 <script lang="ts">
-  import { onDestroy } from "svelte";
   import { nextGenerationTip } from "$lib/core/ai_generation_tips";
 
   let {
@@ -27,23 +26,18 @@
   } = $props();
 
   let tip = $state(nextGenerationTip());
-  let intervalId: ReturnType<typeof setInterval> | null = null;
 
+  // Only re-run when `show` flips — do not read `tip` inside the effect body
+  // (that would re-trigger on every tip change → effect_update_depth_exceeded).
   $effect(() => {
-    if (show) {
-      tip = nextGenerationTip(tip);
-      if (intervalId) clearInterval(intervalId);
-      intervalId = setInterval(() => {
-        tip = nextGenerationTip(tip);
-      }, 4500);
-    } else if (intervalId) {
-      clearInterval(intervalId);
-      intervalId = null;
-    }
-  });
-
-  onDestroy(() => {
-    if (intervalId) clearInterval(intervalId);
+    if (!show) return;
+    let current = nextGenerationTip();
+    tip = current;
+    const intervalId = setInterval(() => {
+      current = nextGenerationTip(current);
+      tip = current;
+    }, 4500);
+    return () => clearInterval(intervalId);
   });
 </script>
 

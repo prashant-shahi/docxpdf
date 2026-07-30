@@ -137,6 +137,7 @@ describe("GenerateDocumentDialog", () => {
     await waitFor(() => {
       expect(generateDocument).toHaveBeenCalledWith("Invoice for Acme", {
         allowMultiPage: true,
+        pageLayout: { size: "a4", orientation: "portrait" },
         images: [],
       });
       expect(ongenerated).toHaveBeenCalledWith(doc);
