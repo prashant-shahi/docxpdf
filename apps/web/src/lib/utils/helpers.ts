@@ -27,6 +27,10 @@ export function showToast(
   persistent?: boolean,
 ): void {
   const toast = document.createElement("div");
+  // Class + data attr so @media print can hide toasts (inline-only nodes were printing onto PDF)
+  toast.className = "docxpdf-toast";
+  toast.setAttribute("data-docxpdf-toast", type);
+  toast.setAttribute("role", "status");
 
   if (persistent) {
     // Persistent toast: top-center banner with icon + close button
@@ -74,6 +78,7 @@ export function showToast(
     // Close button
     const close = document.createElement("button");
     close.textContent = "\u00d7";
+    close.setAttribute("aria-label", "Dismiss");
     Object.assign(close.style, {
       position: "absolute",
       top: "50%",
