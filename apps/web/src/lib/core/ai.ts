@@ -21,8 +21,10 @@
 
 import {
   AI_DOCUMENT_SCHEMA_PROMPT,
+  formatPageLayoutForAIPrompt,
   normalizeAIDocument,
   type NormalizedAIDocument,
+  type PageSize,
 } from "@docxpdf/engine";
 
 export interface AIProviderConfig {
@@ -715,6 +717,11 @@ export async function generateDocument(
   prompt: string,
   options: {
     allowMultiPage?: boolean;
+    /** User-selected page size + orientation (required for layout fidelity). */
+    pageLayout?: {
+      size: string;
+      orientation: "portrait" | "landscape";
+    };
     images?: {
       imageId: string;
       title: string;
@@ -733,16 +740,27 @@ export async function generateDocument(
     palette: img.palette,
   }));
   const catalogMsg = buildImageCatalogMessage(catalog);
-  const fullUserPrompt = userPrompt + catalogMsg;
+  const pageLayoutMsg = options.pageLayout
+    ? formatPageLayoutForAIPrompt(options.pageLayout)
+    : formatPageLayoutForAIPrompt({ size: "a4", orientation: "portrait" });
+  const fullUserPrompt = userPrompt + pageLayoutMsg + catalogMsg;
 
   const first = await chatCompletion(AI_DOCUMENT_SCHEMA_PROMPT, fullUserPrompt, {
     maxTokens: 8192,
     jsonMode: true,
   });
 
+  const layout = options.pageLayout ?? {
+    size: "a4",
+    orientation: "portrait" as const,
+  };
   const normalizeOpts = {
     allowMultiPage: options.allowMultiPage !== false,
     imageCatalog: catalog.length ? catalog : undefined,
+    forcedPageLayout: {
+      size: layout.size as PageSize,
+      orientation: layout.orientation,
+    },
   };
 
   try {
@@ -752,6 +770,7 @@ export async function generateDocument(
     // One repair pass if the model returned truncated / messy JSON
     const repair = await chatCompletion(
       "Fix the following into a single valid JSON object matching the DOCxPDF document schema. Output ONLY JSON." +
+        pageLayoutMsg +
         catalogMsg,
       "Previous output:\n" +
         first.content +

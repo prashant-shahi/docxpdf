@@ -15,6 +15,7 @@
  */
 
 import { PAGE_SIZES } from "./constants";
+import { chromeBandToHtml, resolvePageChrome } from "./page_chrome";
 import { isLineShape, lineBoxStyle, shapeBoxStyle } from "./shapes";
 import type {
   CanvasDocumentState,
@@ -22,7 +23,33 @@ import type {
   ShapeElement,
 } from "./types";
 
+function renderChromeHtml(
+  state: CanvasDocumentState,
+  pageW: number,
+  pageH: number,
+  pageIndex: number,
+  pageCount: number,
+  title?: string,
+): string {
+  const resolved = resolvePageChrome(
+    state.chrome,
+    pageH,
+    { pageIndex, pageCount, title },
+    state.margins,
+  );
+  let html = "";
+  if (resolved.header) {
+    html += chromeBandToHtml(resolved.header, pageW, state.margins);
+  }
+  if (resolved.footer) {
+    html += chromeBandToHtml(resolved.footer, pageW, state.margins);
+  }
+  return html;
+}
+
 export interface BuildPrintHtmlOptions {
+  /** Document title for {{title}} chrome tokens. */
+  title?: string;
   resolveImageSrc?: (
     el: CanvasElement & { imageId?: string; src?: string },
   ) => Promise<string | null>;
@@ -117,13 +144,17 @@ export function elementToHtml(el: CanvasElement, src?: string | null): string {
 }
 
 /** Build print-ready HTML for all pages (sync; images must already have src). */
-export function buildPrintHtml(state: CanvasDocumentState): string {
-  return buildPrintHtmlSync(state);
+export function buildPrintHtml(
+  state: CanvasDocumentState,
+  options: BuildPrintHtmlOptions = {},
+): string {
+  return buildPrintHtmlSync(state, new Map(), options);
 }
 
 function buildPrintHtmlSync(
   state: CanvasDocumentState,
   resolved = new Map<number, string>(),
+  options: BuildPrintHtmlOptions = {},
 ): string {
   const layout = state.pageLayout;
   const size = PAGE_SIZES[layout.size] ?? PAGE_SIZES.a4;
@@ -135,15 +166,24 @@ function buildPrintHtmlSync(
     (a, b) => Number(a) - Number(b),
   );
 
+  const pageCount = pageKeys.length || 1;
   const pages = pageKeys
-    .map((key) => {
+    .map((key, pageIndex) => {
       const els = state.pageElements[key] ?? [];
       const body = els
         .map((el) =>
           elementToHtml(el, el.type === "image" ? resolved.get(el.id) ?? el.src : undefined),
         )
         .join("\n");
-      return `<div class="page" style="width:${pw}px;height:${ph}px;background:${bg}">${body}</div>`;
+      const chromeHtml = renderChromeHtml(
+        state,
+        pw,
+        ph,
+        pageIndex,
+        pageCount,
+        options.title,
+      );
+      return `<div class="page" style="width:${pw}px;height:${ph}px;background:${bg}">${chromeHtml}${body}</div>`;
     })
     .join("");
 
@@ -171,5 +211,5 @@ export async function buildPrintHtmlAsync(
       }
     }
   }
-  return buildPrintHtmlSync(state, resolved);
+  return buildPrintHtmlSync(state, resolved, options);
 }

@@ -15,6 +15,7 @@
  */
 
 import { CURRENT_VERSION } from "./migrate";
+import { DEFAULT_PAGE_MARGINS } from "./geometry";
 import type { CanvasDocumentState } from "./types";
 
 /** Default empty v3 document (single blank page). */
@@ -24,5 +25,8 @@ export function createBlankDocumentState(): CanvasDocumentState {
     pageLayout: { size: "a4", orientation: "portrait", bgColor: "#ffffff" },
     pageElements: { "0": [] },
     nextId: 1,
+    margins: { ...DEFAULT_PAGE_MARGINS },
+    guides: [],
+    chrome: {},
   };
 }

@@ -231,6 +231,8 @@ h6 {
 .canvas-el.text-el [contenteditable="true"] {
   cursor: text;
   user-select: text;
+  /* While typing, allow content to paint full height as the frame grows */
+  overflow: visible !important;
 }
 
 .canvas-el.image-el img {
@@ -728,8 +730,16 @@ h6 {
   .selection-label,
   .color-picker-dialog,
   .fmt-dropdown,
+  .app-footer,
+  .mobile-action-bar,
   nav,
-  input[type="file"] {
+  input[type="file"],
+  .page-margin-overlay,
+  .page-guide,
+  .page-guide-v,
+  .page-guide-h,
+  .marquee-select,
+  .selection-overlay {
     display: none !important;
   }
 

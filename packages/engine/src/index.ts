@@ -31,3 +31,5 @@ export * from "./ai_document";
 export * from "./text_measure";
 export * from "./color_contrast";
 export * from "./image_palette";
+export * from "./geometry";
+export * from "./page_chrome";

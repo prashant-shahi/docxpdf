@@ -85,6 +85,12 @@ const INITIAL: AppState = {
   redoStack: [],
   activePage: 0,
   pageCount: 1,
+  margins: { top: 40, right: 40, bottom: 40, left: 40 },
+  guides: [],
+  chrome: {},
+  // Overlay is editor-only; off by default (snap still uses margins as invisible barrier)
+  showMargins: false,
+  snapEnabled: true,
 };
 
 /** Deep-clone pageElements quickly. */

@@ -130,6 +130,10 @@ const webPdf: PlatformServices["pdf"] = {
    */
   async exportToPdf(state: CanvasDocumentState): Promise<Uint8Array> {
     const html = await buildPrintHtmlAsync(state, {
+      title:
+        typeof window !== "undefined"
+          ? (window as Window & { __docTitle?: string }).__docTitle
+          : undefined,
       resolveImageSrc: async (el) => {
         if (el.src) return el.src;
         if (el.imageId) return loadImage(el.imageId);

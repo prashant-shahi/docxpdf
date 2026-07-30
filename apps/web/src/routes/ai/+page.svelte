@@ -55,9 +55,11 @@
     loadAIGeneration,
   } from "$lib/utils/db";
   import AttachImagesDialog from "$lib/components/editor/AttachImagesDialog.svelte";
+  import GeneratingOverlay from "$lib/components/editor/GeneratingOverlay.svelte";
   import { showToast } from "$lib/utils/helpers";
   import type { CanvasDocumentState } from "$lib/types/global";
   import { appendGeneratedPages } from "$lib/core/ai_document_apply";
+  import type { PageSize } from "@docxpdf/engine";
   // ── Provider brand colors ──
   const PROVIDER_COLORS: Record<string, string> = {
     openai: "#10A37F",
@@ -93,6 +95,9 @@
   let destination = $state<"new" | "existing">("new");
   let documents = $state<{ id: string; title: string }[]>([]);
   let selectedDocId = $state("");
+  /** User-selected page setup for generation. */
+  let pageSize = $state("a4");
+  let pageOrientation = $state<"portrait" | "landscape">("portrait");
 
   /** AI usage for the current result card */
   let lastUsage: AIUsage | null = $state(null);
@@ -253,6 +258,10 @@
       });
       const doc = await generateDocument(prompt, {
         allowMultiPage: true,
+        pageLayout: {
+          size: pageSize as PageSize,
+          orientation: pageOrientation,
+        },
         images: attached.map((a) => ({
           imageId: a.imageId,
           title: a.title,
@@ -553,11 +562,39 @@
             from your library. Mention titles in the prompt to place them.
           </p>
         {/if}
+        <div class="page-setup-row">
+          <label class="page-field">
+            <span class="page-field-label">Page size</span>
+            <select class="page-select" bind:value={pageSize} disabled={generating}>
+              <option value="a6">A6</option>
+              <option value="a5">A5</option>
+              <option value="a4">A4</option>
+              <option value="a3">A3</option>
+              <option value="b5">B5</option>
+              <option value="letter">Letter</option>
+              <option value="legal">Legal</option>
+              <option value="executive">Executive</option>
+              <option value="tabloid">Tabloid</option>
+            </select>
+          </label>
+          <label class="page-field">
+            <span class="page-field-label">Orientation</span>
+            <select
+              class="page-select"
+              bind:value={pageOrientation}
+              disabled={generating}
+            >
+              <option value="portrait">Portrait</option>
+              <option value="landscape">Landscape</option>
+            </select>
+          </label>
+        </div>
         <textarea
           id="ai-prompt"
           bind:value={prompt}
           placeholder="e.g. A one-page consulting proposal for Acme Corp: scope, timeline, and pricing table…"
           class="prompt-textarea"
+          disabled={generating}
         ></textarea>
         <details class="example-picker">
           <summary class="example-picker-summary">Example prompts</summary>
@@ -702,6 +739,8 @@
     </main>
   </div>
 </div>
+
+<GeneratingOverlay show={generating} />
 
 <AISettings open={showSettings} onclose={handleSettingsClosed} />
 <AttachImagesDialog
@@ -1209,6 +1248,35 @@
   .example-chip:disabled {
     opacity: 0.55;
     cursor: not-allowed;
+  }
+
+  .page-setup-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .page-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .page-field-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+
+  .page-select {
+    width: 100%;
+    font-size: 13px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+    color: var(--color-text);
   }
 
   /* ─── Prompt textarea ─── */

@@ -36,6 +36,7 @@
     shapeLabel,
     selectionOutlineRadius,
   } from "$lib/core/shapes";
+  import { contentBox, resolveChromeTokens } from "@docxpdf/engine";
 
   let {
     editingTextId = $bindable(null),
@@ -46,6 +47,19 @@
     readonly?: boolean;
     showAllPages?: boolean;
   } = $props();
+
+  function resolveChrome(
+    content: string | undefined,
+    pageIndex: number,
+    pageCount: number,
+  ): string {
+    if (!content) return "";
+    return resolveChromeTokens(content, {
+      pageIndex,
+      pageCount,
+      title: typeof document !== "undefined" ? (window as any).__docTitle : "",
+    });
+  }
 
   const pageDimensions = $derived.by(() => {
     const layout = $canvasStore.pageLayout;
@@ -166,11 +180,12 @@
   }
 
   function onDragStart() {
+    // Undo snapshot only — never set isDragging / store mid-gesture.
+    // Store updates re-render Svelte and used to cancel drag (select-then-drag felt like double-click).
     canvasStore.snapshot();
-    canvasStore.update((s) => ({ ...s, isDragging: true }));
   }
   function onDragEnd() {
-    canvasStore.update((s) => ({ ...s, isDragging: false }));
+    // Position is committed inside use-draggable; nothing else to clear.
   }
 
   // ── Table resize handlers ──
@@ -303,9 +318,8 @@
 
   /**
    * Begin a cell-range selection. Only fires when the table is already selected
-   * (so the first click still selects/moves the table). Suppresses the next
-   * interact.js drag so dragging across cells extends the range instead of
-   * moving the table.
+   * (so the first click still selects/moves the table). Suppresses element drag
+   * so dragging across cells extends the range instead of moving the table.
    */
   function cellMouseDown(e: MouseEvent, tableId: number, row: number, col: number) {
     if (e.button !== 0) return;
@@ -471,9 +485,8 @@
     // When editing text inside a contentEditable child, skip selection
     const elDiv = target.closest(".canvas-el") as HTMLElement | null;
     if (elDiv?.querySelector("[contenteditable='true']")) return;
-    const wasSelected = $canvasStore.selectedIds.includes(elId);
-    // Select first; drag only on a subsequent press on an already-selected element.
-    if (!wasSelected) suppressNextDrag();
+    // Select on press and allow the same gesture to drag (do not suppressNextDrag).
+    // Table cell range selection still calls suppressNextDrag() separately.
     if (e.shiftKey || e.metaKey || e.ctrlKey) {
       toggleSelect(elId);
     } else {
@@ -496,6 +509,7 @@
       t.classList.contains("canvas-page") ||
       t.classList.contains("canvas-page-elements");
     if (isPageBg) {
+      commitActiveTextEditing();
       deselectAll();
     }
   }
@@ -544,6 +558,9 @@
 
     const pageEl = t.closest(".canvas-page") as HTMLElement | null;
     if (!pageEl) return;
+
+    // preventDefault below blocks the natural contentEditable blur — end edit first.
+    commitActiveTextEditing();
 
     const start = pagePointFromEvent(e, pageEl);
     marqueeDidSelect = false;
@@ -695,6 +712,39 @@
     wrapWithSpan({ color: color });
   }
 
+  /**
+   * Grow the text frame so all content is visible.
+   * Mutates DOM + element height only (no store write) to avoid caret reset.
+   * Height is committed with content on blur.
+   */
+  function fitTextElementHeight(contentEl: HTMLElement, el: TextElement) {
+    const host = contentEl.closest(".canvas-el") as HTMLElement | null;
+    if (!host) return;
+
+    // Measure natural content height without the fixed frame constraint
+    const prevHeight = contentEl.style.height;
+    const prevOverflow = contentEl.style.overflow;
+    contentEl.style.height = "auto";
+    contentEl.style.overflow = "visible";
+    const needed = Math.ceil(contentEl.scrollHeight);
+    contentEl.style.height = prevHeight || "100%";
+    contentEl.style.overflow = prevOverflow || "";
+
+    const fontSize = el.fontSize ?? 16;
+    const minH = Math.max(12, Math.ceil(fontSize * 1.2));
+    const nextH = Math.max(minH, needed);
+    if (Math.abs(nextH - el.height) < 0.5) return;
+
+    el.height = nextH;
+    host.style.height = nextH + "px";
+
+    // Keep selection outline in sync without a store re-render
+    const overlay = host.nextElementSibling as HTMLElement | null;
+    if (overlay?.classList.contains("selection-overlay")) {
+      overlay.style.height = nextH + 4 + "px";
+    }
+  }
+
   function textDblClick(e: MouseEvent, el: TextElement, elId: number) {
     const div = e.currentTarget as HTMLElement;
     // Set contentEditable and focus FIRST so the native double-click
@@ -704,12 +754,40 @@
     editingTextId = elId;
     // Keep the element selected (to preserve outline + property panel)
     // but resize handles are hidden during editing via template check
-    // Scroll the toolbar into view
-    requestAnimationFrame(() =>
+    // Scroll the toolbar into view; grow frame if content already overflows
+    requestAnimationFrame(() => {
+      fitTextElementHeight(div, el);
       document
         .querySelector(".text-formatting-toolbar")
-        ?.scrollIntoView({ behavior: "smooth", block: "nearest" }),
-    );
+        ?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+  }
+
+  /**
+   * Leave text/cell edit mode and persist content.
+   * Needed when outside clicks call preventDefault (marquee) so the
+   * contentEditable never receives a natural blur but selection is cleared.
+   */
+  function commitActiveTextEditing() {
+    const active = document.activeElement as HTMLElement | null;
+    if (active?.closest?.(".canvas-el") && active.isContentEditable) {
+      active.blur();
+    }
+    // Catch orphaned contenteditables that stayed true without focus
+    document
+      .querySelectorAll('.canvas-el [contenteditable="true"]')
+      .forEach((node) => {
+        const el = node as HTMLElement;
+        if (el.isContentEditable) el.blur();
+      });
+    if (editingTextId != null) {
+      editingTextId = null;
+      editingTextRect = null;
+    }
+  }
+
+  function textInput(e: Event, el: TextElement) {
+    fitTextElementHeight(e.currentTarget as HTMLElement, el);
   }
 
   function textBlur(e: FocusEvent, el: TextElement) {
@@ -727,16 +805,40 @@
     ) {
       return;
     }
+    // Final size before leaving edit mode
+    fitTextElementHeight(div, el);
     div.contentEditable = "false";
-    // Save sanitized innerHTML to preserve inline formatting
     const newContent = sanitizeHTML(div.innerHTML || "");
-    if (el.content !== newContent) {
+    const newHeight = el.height;
+    const contentChanged = el.content !== newContent;
+    // Compare against store in case height was only mutated on the live object
+    const storeHeight =
+      Object.values(get(canvasStore).pageElements)
+        .flat()
+        .find((item) => item.id === el.id)?.height ?? el.height;
+    const heightChanged = Math.abs(storeHeight - newHeight) >= 0.5;
+
+    if (contentChanged || heightChanged) {
       canvasStore.snapshot();
       el.content = newContent;
+      el.height = newHeight;
+      canvasStore.update((s) => {
+        const pageKey = String(s.activePage);
+        const els = (s.pageElements[pageKey] || []).map((item) => {
+          if (item.id !== el.id) return item;
+          return {
+            ...structuredClone(item),
+            content: newContent,
+            height: newHeight,
+          };
+        });
+        return { ...s, pageElements: { ...s.pageElements, [pageKey]: els } };
+      });
+    } else {
+      canvasStore.update((s) => ({ ...s }));
     }
     editingTextId = null;
     editingTextRect = null;
-    canvasStore.update((s) => ({ ...s }));
   }
 
   function textKeyDown(e: KeyboardEvent, el: TextElement) {
@@ -757,9 +859,10 @@
       document.execCommand("underline");
       return;
     }
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      div.blur();
+    // Enter inserts a line break (native contentEditable). Escape exits edit mode.
+    if (e.key === "Enter") {
+      // Grow after the browser inserts the line break
+      requestAnimationFrame(() => fitTextElementHeight(div, el));
     }
     if (e.key === "Escape") {
       e.preventDefault();
@@ -878,10 +981,71 @@
         class="canvas-page bg-white relative shadow-[0_2px_12px_rgba(0,0,0,0.12),0_1px_4px_rgba(0,0,0,0.08)] flex-shrink-0"
         style="width:{pageDimensions.width}px;height:{pageDimensions.height}px;background:{pageDimensions.bgColor}"
       >
+        <!-- Margin guide: thin dashed content-box outline only (no blue wash) -->
+        <!-- Visual margin guide only (editor); never exported — snap uses margins even when hidden -->
+        {#if !readonly && $canvasStore.showMargins === true}
+          {@const box = contentBox(
+            pageDimensions.width,
+            pageDimensions.height,
+            $canvasStore.margins,
+          )}
+          <div
+            class="page-margin-overlay"
+            style="position:absolute;left:{box.x}px;top:{box.y}px;width:{box.width}px;height:{box.height}px;pointer-events:none;z-index:0;box-sizing:border-box;border:1px dashed color-mix(in srgb, var(--color-text-muted) 35%, transparent)"
+            aria-hidden="true"
+          ></div>
+        {/if}
+        <!-- Permanent custom guides only; live snap lines are plain DOM from use-draggable -->
+        {#if !readonly}
+          {#each $canvasStore.guides ?? [] as g (g.id)}
+            {#if g.orientation === "vertical"}
+              <div
+                class="page-guide page-guide-v"
+                style="position:absolute;top:0;bottom:0;left:{g.position}px;width:0;border-left:1px solid color-mix(in srgb, var(--color-text-muted) 55%, transparent);pointer-events:none;z-index:9990"
+                aria-hidden="true"
+              ></div>
+            {:else}
+              <div
+                class="page-guide page-guide-h"
+                style="position:absolute;left:0;right:0;top:{g.position}px;height:0;border-top:1px solid color-mix(in srgb, var(--color-text-muted) 55%, transparent);pointer-events:none;z-index:9990"
+                aria-hidden="true"
+              ></div>
+            {/if}
+          {/each}
+        {/if}
+        <!-- Header / footer chrome -->
+        {#if $canvasStore.chrome}
+          {@const pageIdx = parseInt(pageKey, 10) || 0}
+          {@const pageCount = Object.keys($canvasStore.pageElements || {}).length || 1}
+          {@const m = $canvasStore.margins ?? { top: 40, right: 40, bottom: 40, left: 40 }}
+          {@const chrome = $canvasStore.chrome}
+          {#if chrome.header?.enabled}
+            {@const h = Math.max(12, chrome.header.height || 32)}
+            <div
+              class="page-chrome page-chrome-header"
+              style="position:absolute;left:{m.left}px;top:{m.top}px;width:{pageDimensions.width - m.left - m.right}px;height:{h}px;pointer-events:none;z-index:1;display:flex;align-items:center;justify-content:space-between;box-sizing:border-box"
+            >
+              <span class="chrome-slot" style="flex:1;text-align:left;font-size:{chrome.header.left?.fontSize ?? 10}px;font-family:{chrome.header.left?.fontFamily ?? 'Arial'};color:{chrome.header.left?.color ?? '#666'};font-weight:{chrome.header.left?.bold ? 'bold' : 'normal'}">{resolveChrome(chrome.header.left?.content, pageIdx, pageCount)}</span>
+              <span class="chrome-slot" style="flex:1;text-align:center;font-size:{chrome.header.center?.fontSize ?? 10}px;font-family:{chrome.header.center?.fontFamily ?? 'Arial'};color:{chrome.header.center?.color ?? '#666'};font-weight:{chrome.header.center?.bold ? 'bold' : 'normal'}">{resolveChrome(chrome.header.center?.content, pageIdx, pageCount)}</span>
+              <span class="chrome-slot" style="flex:1;text-align:right;font-size:{chrome.header.right?.fontSize ?? 10}px;font-family:{chrome.header.right?.fontFamily ?? 'Arial'};color:{chrome.header.right?.color ?? '#666'};font-weight:{chrome.header.right?.bold ? 'bold' : 'normal'}">{resolveChrome(chrome.header.right?.content, pageIdx, pageCount)}</span>
+            </div>
+          {/if}
+          {#if chrome.footer?.enabled}
+            {@const h = Math.max(12, chrome.footer.height || 28)}
+            <div
+              class="page-chrome page-chrome-footer"
+              style="position:absolute;left:{m.left}px;top:{pageDimensions.height - m.bottom - h}px;width:{pageDimensions.width - m.left - m.right}px;height:{h}px;pointer-events:none;z-index:1;display:flex;align-items:center;justify-content:space-between;box-sizing:border-box"
+            >
+              <span class="chrome-slot" style="flex:1;text-align:left;font-size:{chrome.footer.left?.fontSize ?? 10}px;font-family:{chrome.footer.left?.fontFamily ?? 'Arial'};color:{chrome.footer.left?.color ?? '#666'};font-weight:{chrome.footer.left?.bold ? 'bold' : 'normal'}">{resolveChrome(chrome.footer.left?.content, pageIdx, pageCount)}</span>
+              <span class="chrome-slot" style="flex:1;text-align:center;font-size:{chrome.footer.center?.fontSize ?? 10}px;font-family:{chrome.footer.center?.fontFamily ?? 'Arial'};color:{chrome.footer.center?.color ?? '#666'};font-weight:{chrome.footer.center?.bold ? 'bold' : 'normal'}">{resolveChrome(chrome.footer.center?.content, pageIdx, pageCount)}</span>
+              <span class="chrome-slot" style="flex:1;text-align:right;font-size:{chrome.footer.right?.fontSize ?? 10}px;font-family:{chrome.footer.right?.fontFamily ?? 'Arial'};color:{chrome.footer.right?.color ?? '#666'};font-weight:{chrome.footer.right?.bold ? 'bold' : 'normal'}">{resolveChrome(chrome.footer.right?.content, pageIdx, pageCount)}</span>
+            </div>
+          {/if}
+        {/if}
         <!-- Elements container — overflow hidden so elements don't visually bleed beyond page -->
         <div
           class="canvas-page-elements"
-          style="position:absolute;inset:0;overflow:hidden"
+          style="position:absolute;inset:0;overflow:hidden;z-index:2"
           onmousedown={(e) => !readonly && startMarquee(e, pageKey)}
         >
           {#each elements as el (el.id)}
@@ -919,11 +1083,12 @@
                     : (el as any).strikethrough
                       ? 'line-through'
                       : 'none'};text-align:{(el as TextElement).textAlign ||
-                    'left'};width:100%;height:100%;outline:none;overflow:hidden;word-wrap:break-word;line-height:normal"
+                    'left'};width:100%;height:100%;outline:none;overflow:hidden;word-wrap:break-word;line-height:normal;box-sizing:border-box"
                   ondblclick={(e) =>
                     !readonly && textDblClick(e, el as TextElement, el.id)}
                   onblur={(e) => textBlur(e, el as TextElement)}
                   onkeydown={(e) => textKeyDown(e, el as TextElement)}
+                  oninput={(e) => !readonly && textInput(e, el as TextElement)}
                 >
                   {@html renderTextContent((el as TextElement).content || "")}
                 </div>

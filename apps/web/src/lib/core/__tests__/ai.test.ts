@@ -913,10 +913,13 @@ describe("generateDocument", () => {
     expect(callBody.messages[0].content).toMatch(/pageElements/);
     expect(callBody.messages[0].content).toMatch(/"image"/);
     expect(callBody.messages[0].content).toMatch(/Do NOT use http/i);
-    expect(callBody.messages[1]).toEqual({
-      role: "user",
-      content: "Make a proposal",
-    });
+    expect(callBody.messages[1].role).toBe("user");
+    expect(callBody.messages[1].content).toMatch(/^Make a proposal/);
+    expect(callBody.messages[1].content).toMatch(/Page layout constraint/i);
+    expect(callBody.messages[1].content).toMatch(/size: "a4"/);
+    expect(callBody.messages[1].content).toMatch(/orientation: "portrait"/);
+    expect(callBody.messages[1].content).toMatch(/595/);
+    expect(callBody.messages[1].content).toMatch(/96 DPI/);
   });
 
   it("appends attached image catalog to the user message", async () => {

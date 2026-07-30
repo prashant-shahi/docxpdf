@@ -15,20 +15,40 @@
 -->
 
 <script lang="ts">
+  import type { PageChrome, PageMargins } from "$lib/types/global";
+
+  export type PageSetupApply = {
+    size: string;
+    orientation: string;
+    bgColor: string;
+    margins: PageMargins;
+    chrome: PageChrome;
+    showMargins: boolean;
+    snapEnabled: boolean;
+  };
+
   let {
     show = false,
     pageSize = "a4",
     pageOrientation = "portrait",
     pageBgColor = "#ffffff",
+    margins = { top: 40, right: 40, bottom: 40, left: 40 },
+    chrome = {} as PageChrome,
+    showMargins = false,
+    snapEnabled = true,
     onclose = () => {},
-    onapply = (_size: string, _orientation: string, _bgColor: string) => {},
+    onapply = (_v: PageSetupApply) => {},
   }: {
     show: boolean;
     pageSize: string;
     pageOrientation: string;
     pageBgColor: string;
+    margins?: PageMargins;
+    chrome?: PageChrome;
+    showMargins?: boolean;
+    snapEnabled?: boolean;
     onclose: () => void;
-    onapply: (size: string, orientation: string, bgColor: string) => void;
+    onapply: (v: PageSetupApply) => void;
   } = $props();
 
   // svelte-ignore state_referenced_locally
@@ -37,17 +57,68 @@
   let localOrientation = $state(pageOrientation);
   // svelte-ignore state_referenced_locally
   let localBgColor = $state(pageBgColor);
+  // svelte-ignore state_referenced_locally
+  let localMargins = $state({ ...margins });
+  // svelte-ignore state_referenced_locally
+  let headerEnabled = $state(!!chrome.header?.enabled);
+  // svelte-ignore state_referenced_locally
+  let headerCenter = $state(chrome.header?.center?.content ?? "");
+  // svelte-ignore state_referenced_locally
+  let footerEnabled = $state(!!chrome.footer?.enabled);
+  // svelte-ignore state_referenced_locally
+  let footerCenter = $state(chrome.footer?.center?.content ?? "{{page}}");
+  // svelte-ignore state_referenced_locally
+  let localShowMargins = $state(showMargins);
+  // svelte-ignore state_referenced_locally
+  let localSnap = $state(snapEnabled);
 
   $effect(() => {
     if (show) {
       localSize = pageSize;
       localOrientation = pageOrientation;
       localBgColor = pageBgColor;
+      localMargins = { ...margins };
+      headerEnabled = !!chrome.header?.enabled;
+      headerCenter = chrome.header?.center?.content ?? "";
+      footerEnabled = !!chrome.footer?.enabled;
+      footerCenter = chrome.footer?.center?.content ?? "{{page}}";
+      localShowMargins = showMargins;
+      localSnap = snapEnabled;
     }
   });
 
   function handleApply() {
-    onapply(localSize, localOrientation, localBgColor);
+    const nextChrome: PageChrome = {
+      header: headerEnabled
+        ? {
+            enabled: true,
+            height: 32,
+            center: headerCenter.trim()
+              ? { content: headerCenter.trim(), fontSize: 10, color: "#666666" }
+              : undefined,
+          }
+        : { enabled: false, height: 32 },
+      footer: footerEnabled
+        ? {
+            enabled: true,
+            height: 28,
+            center: {
+              content: footerCenter.trim() || "{{page}}",
+              fontSize: 10,
+              color: "#666666",
+            },
+          }
+        : { enabled: false, height: 28 },
+    };
+    onapply({
+      size: localSize,
+      orientation: localOrientation,
+      bgColor: localBgColor,
+      margins: { ...localMargins },
+      chrome: nextChrome,
+      showMargins: localShowMargins,
+      snapEnabled: localSnap,
+    });
     onclose();
   }
 </script>
@@ -62,11 +133,11 @@
     }}
   >
     <div
-      class="bg-white rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.18)] w-[380px] max-w-[90vw] overflow-hidden"
+      class="bg-white rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.18)] w-[420px] max-w-[90vw] max-h-[90vh] overflow-y-auto"
       onclick={(e) => e.stopPropagation()}
     >
       <div
-        class="flex items-center justify-between px-5 py-3 border-b border-[#e8ecf1]"
+        class="flex items-center justify-between px-5 py-3 border-b border-[#e8ecf1] sticky top-0 bg-white z-10"
       >
         <span class="font-semibold text-sm text-[#1a1a1a]">Page Setup</span>
         <button
@@ -98,54 +169,120 @@
           </select>
         </div>
         <div>
-          <label
-            for="page-setup-orientation"
-            class="text-xs font-medium text-[#555] mb-1 block"
-            >Orientation</label
+          <span class="text-xs font-medium text-[#555] mb-1 block"
+            >Orientation</span
           >
-          <select
-            id="page-setup-orientation"
-            bind:value={localOrientation}
-            class="w-full px-2.5 py-2 text-sm border border-[#d0d5dd] rounded-lg outline-none focus:border-[#1677ff] bg-white"
-          >
-            <option value="portrait">Portrait</option>
-            <option value="landscape">Landscape</option>
-          </select>
+          <div class="flex gap-2">
+            <label class="flex items-center gap-1.5 text-sm cursor-pointer">
+              <input
+                type="radio"
+                name="orientation"
+                value="portrait"
+                bind:group={localOrientation}
+              />
+              Portrait
+            </label>
+            <label class="flex items-center gap-1.5 text-sm cursor-pointer">
+              <input
+                type="radio"
+                name="orientation"
+                value="landscape"
+                bind:group={localOrientation}
+              />
+              Landscape
+            </label>
+          </div>
         </div>
         <div>
           <label
             for="page-setup-bg"
             class="text-xs font-medium text-[#555] mb-1 block"
-            >Page Background</label
+            >Background</label
           >
-          <div class="flex items-center gap-2">
-            <input
-              type="color"
-              id="page-setup-bg"
-              bind:value={localBgColor}
-              class="w-10 h-9 p-0.5 border border-[#d0d5dd] rounded cursor-pointer"
-            />
-            <input
-              type="text"
-              bind:value={localBgColor}
-              class="flex-1 px-2.5 py-2 text-sm border border-[#d0d5dd] rounded-lg outline-none focus:border-[#1677ff] font-mono"
-            />
+          <input
+            id="page-setup-bg"
+            type="color"
+            bind:value={localBgColor}
+            class="w-full h-9 rounded-lg border border-[#d0d5dd] cursor-pointer"
+          />
+        </div>
+
+        <div class="border-t border-[#e8ecf1] pt-3">
+          <div class="text-xs font-semibold text-[#333] mb-2">Margins (px)</div>
+          <div class="grid grid-cols-2 gap-2">
+            {#each ["top", "right", "bottom", "left"] as side}
+              <label class="text-xs text-[#555]">
+                {side}
+                <input
+                  type="number"
+                  min="0"
+                  max="200"
+                  class="w-full mt-0.5 px-2 py-1.5 text-sm border border-[#d0d5dd] rounded-lg"
+                  bind:value={localMargins[side as keyof PageMargins]}
+                />
+              </label>
+            {/each}
           </div>
         </div>
+
+        <div class="border-t border-[#e8ecf1] pt-3 space-y-2">
+          <div class="text-xs font-semibold text-[#333]">Header & footer</div>
+          <p class="text-[11px] text-[#888] leading-snug">
+            Tokens: <code class="text-[10px]">{"{{page}}"}</code>,
+            <code class="text-[10px]">{"{{pages}}"}</code>,
+            <code class="text-[10px]">{"{{title}}"}</code>
+          </p>
+          <label class="flex items-center gap-2 text-sm cursor-pointer">
+            <input type="checkbox" bind:checked={headerEnabled} />
+            Header
+          </label>
+          {#if headerEnabled}
+            <input
+              type="text"
+              placeholder="Header center text"
+              bind:value={headerCenter}
+              class="w-full px-2.5 py-2 text-sm border border-[#d0d5dd] rounded-lg"
+            />
+          {/if}
+          <label class="flex items-center gap-2 text-sm cursor-pointer">
+            <input type="checkbox" bind:checked={footerEnabled} />
+            Footer (page numbers)
+          </label>
+          {#if footerEnabled}
+            <input
+              type="text"
+              placeholder={'e.g. {{page}} or Page {{page}} of {{pages}}'}
+              bind:value={footerCenter}
+              class="w-full px-2.5 py-2 text-sm border border-[#d0d5dd] rounded-lg"
+            />
+          {/if}
+        </div>
+
+        <div class="border-t border-[#e8ecf1] pt-3 space-y-2">
+          <div class="text-xs font-semibold text-[#333]">Guides</div>
+          <label class="flex items-center gap-2 text-sm cursor-pointer">
+            <input type="checkbox" bind:checked={localShowMargins} />
+            Show margin guides (editor only — not printed or exported)
+          </label>
+          <label class="flex items-center gap-2 text-sm cursor-pointer">
+            <input type="checkbox" bind:checked={localSnap} />
+            Snap to margins, centers &amp; elements (invisible barrier when guides hidden)
+          </label>
+        </div>
       </div>
-      <div class="flex justify-end gap-2 px-5 py-3 border-t border-[#e8ecf1]">
+      <div
+        class="flex justify-end gap-2 px-5 py-3 border-t border-[#e8ecf1] bg-[#fafbfc]"
+      >
         <button
           onclick={onclose}
-          class="px-4 py-2 text-xs font-medium bg-white text-[#555] border border-[#d0d5dd] rounded-lg hover:bg-[#f5f5f5] transition-colors cursor-pointer"
+          class="px-3.5 py-1.5 text-sm rounded-lg border border-[#d0d5dd] bg-white hover:bg-[#f5f5f5] cursor-pointer"
+          >Cancel</button
         >
-          Cancel
-        </button>
         <button
           onclick={handleApply}
-          class="px-4 py-2 text-xs font-semibold bg-[#1677ff] text-white rounded-lg hover:bg-[#4096ff] transition-colors cursor-pointer border-none"
+          class="px-3.5 py-1.5 text-sm rounded-lg border-none bg-[#1677ff] text-white hover:bg-[#0958d9] cursor-pointer"
+          >Apply</button
         >
-          Apply
-        </button>
       </div>
     </div>
   </div>

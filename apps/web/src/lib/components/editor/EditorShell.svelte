@@ -105,16 +105,61 @@
   let hasUnsavedChanges = $state(false);
   let savedJson = $state("");
 
+  /** Fingerprint includes elements + page chrome/margins (not UI-only snap lines). */
+  function documentFingerprint(s: typeof $canvasStore): string {
+    return JSON.stringify({
+      pageElements: s.pageElements,
+      pageLayout: s.pageLayout,
+      nextId: s.nextId,
+      margins: s.margins,
+      guides: s.guides,
+      chrome: s.chrome,
+    });
+  }
+
   $effect(() => {
-    const json = JSON.stringify($canvasStore.pageElements);
+    const json = documentFingerprint($canvasStore);
     // Only consider unsaved after initial state is captured (savedJson non-empty)
     hasUnsavedChanges = savedJson !== "" && json !== savedJson;
   });
 
   /** Mark the current canvas state as "saved" — clears unsaved flag. */
   function markSaved() {
-    savedJson = JSON.stringify($canvasStore.pageElements);
+    savedJson = documentFingerprint($canvasStore);
     hasUnsavedChanges = false;
+  }
+
+  /** Defaults for P1 layout fields (margins / guides / chrome / UI prefs). */
+  function p1LayoutDefaults(from?: {
+    margins?: typeof $canvasStore.margins;
+    guides?: typeof $canvasStore.guides;
+    chrome?: typeof $canvasStore.chrome;
+    showMargins?: boolean;
+    snapEnabled?: boolean;
+  }) {
+    return {
+      margins: from?.margins ?? { top: 40, right: 40, bottom: 40, left: 40 },
+      guides: from?.guides ?? [],
+      chrome: from?.chrome ?? {},
+      showMargins: from?.showMargins ?? false,
+      snapEnabled: from?.snapEnabled ?? true,
+    };
+  }
+
+  /** Persistable document fields (P1 chrome / margins / guides included). */
+  function documentPayload(state: typeof $canvasStore, canvasState: ReturnType<typeof getCanvasState>) {
+    return {
+      pageLayout: {
+        size: canvasState.pageLayout.size,
+        orientation: canvasState.pageLayout.orientation,
+        bgColor: canvasState.pageLayout.bgColor,
+      },
+      pageElements: state.pageElements,
+      nextId: state.nextId,
+      margins: state.margins,
+      guides: state.guides,
+      chrome: state.chrome,
+    };
   }
 
   // Warn on SPA navigation
@@ -169,6 +214,7 @@
         redoStack: [],
         activePage: 0,
         pageCount: 1,
+        ...p1LayoutDefaults(),
       });
 
       const urlParams = new URLSearchParams(window.location.search);
@@ -236,6 +282,11 @@
                   redoStack: [],
                   activePage: 0,
                   pageCount: Math.max(1, Object.keys(pageElements).length),
+                  ...p1LayoutDefaults({
+                    margins: docData.margins,
+                    guides: docData.guides,
+                    chrome: docData.chrome,
+                  }),
                 });
                 markSaved();
               });
@@ -447,15 +498,7 @@
       await saveDocument({
         id: docId,
         title: docTitle,
-        data: {
-          pageLayout: {
-            size: canvasState.pageLayout.size,
-            orientation: canvasState.pageLayout.orientation,
-            bgColor: canvasState.pageLayout.bgColor,
-          },
-          pageElements: state.pageElements,
-          nextId: state.nextId,
-        },
+        data: documentPayload(state, canvasState),
       });
     }
     goto("/document/new");
@@ -523,13 +566,8 @@
         id: saveId,
         title: docTitle,
         data: {
-          pageLayout: {
-            size: canvasState.pageLayout.size,
-            orientation: canvasState.pageLayout.orientation,
-            bgColor: canvasState.pageLayout.bgColor,
-          },
+          ...documentPayload(state, canvasState),
           pageElements: newPageElements,
-          nextId: state.nextId,
         },
       });
       docId = saved.id;
@@ -546,15 +584,7 @@
         const saved = await saveDocument({
           id: saveId,
           title: docTitle,
-          data: {
-            pageLayout: {
-              size: canvasState.pageLayout.size,
-              orientation: canvasState.pageLayout.orientation,
-              bgColor: canvasState.pageLayout.bgColor,
-            },
-            pageElements: state.pageElements,
-            nextId: state.nextId,
-          },
+          data: documentPayload(state, canvasState),
         });
         docId = saved.id;
         window.__docId = docId;
@@ -606,6 +636,11 @@
         undoStack: [], redoStack: [],
         activePage: 0,
         pageCount: Object.keys(t.data.pageElements).length,
+        ...p1LayoutDefaults({
+          margins: (t.data as any).margins,
+          guides: (t.data as any).guides,
+          chrome: (t.data as any).chrome,
+        }),
       });
     } else {
       // Single-page template
@@ -620,6 +655,11 @@
         selectedIds: [], isDragging: false,
         undoStack: [], redoStack: [],
         activePage: 0, pageCount: 1,
+        ...p1LayoutDefaults({
+          margins: (t.data as any).margins,
+          guides: (t.data as any).guides,
+          chrome: (t.data as any).chrome,
+        }),
       });
     }
     setPageSize(size, orientation, bgColor);
@@ -776,13 +816,27 @@
     {pageSize}
     {pageOrientation}
     {pageBgColor}
+    margins={$canvasStore.margins ?? { top: 40, right: 40, bottom: 40, left: 40 }}
+    chrome={$canvasStore.chrome ?? {}}
+    showMargins={$canvasStore.showMargins !== false}
+    snapEnabled={$canvasStore.snapEnabled !== false}
     onclose={() => (showPageSetup = false)}
-    onapply={(size, orientation, bgColor) => {
+    onapply={(v) => {
       setPageSize(
-        size as any,
-        orientation as "portrait" | "landscape",
-        bgColor,
+        v.size as any,
+        v.orientation as "portrait" | "landscape",
+        v.bgColor,
       );
+      canvasStore.update((s) => ({
+        ...s,
+        margins: v.margins,
+        chrome: v.chrome,
+        showMargins: v.showMargins,
+        snapEnabled: v.snapEnabled,
+      }));
+      pageSize = v.size;
+      pageOrientation = v.orientation;
+      pageBgColor = v.bgColor;
     }}
   />
 
