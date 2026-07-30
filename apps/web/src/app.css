@@ -695,6 +695,15 @@ h6 {
 /* ── Print Styles ────────────────────────────────────────── */
 
 @media print {
+  /*
+   * zoom: 1.33 maps 96dpi screen CSS px → physical page (see CONTRIBUTING).
+   * Apply on html ONLY — setting it on both html and body compounds in Chromium
+   * (~1.77×), overflows @page by hundreds of px, and forces a blank second sheet.
+   */
+  html {
+    zoom: 1.33;
+  }
+
   html,
   body {
     margin: 0 !important;
@@ -702,7 +711,6 @@ h6 {
     background: white !important;
     height: auto !important;
     overflow: visible !important;
-    zoom: 1.33;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
@@ -723,6 +731,7 @@ h6 {
   #toolbar,
   #user-menu,
   #loading-overlay,
+  #__loading-overlay,
   .ai-dialog-panel,
   .text-formatting-toolbar,
   .canvas-zoom-control,
@@ -738,9 +747,14 @@ h6 {
   .page-guide,
   .page-guide-v,
   .page-guide-h,
+  .page-guide-snap-live,
   .marquee-select,
-  .selection-overlay {
+  .selection-overlay,
+  /* Imperative + component toasts (no class before — they printed onto PDF) */
+  .docxpdf-toast,
+  [data-docxpdf-toast] {
     display: none !important;
+    visibility: hidden !important;
   }
 
   /* Collapse flex containers to prevent extra page */
@@ -785,6 +799,11 @@ h6 {
     display: none !important;
   }
 
+  /*
+   * Print every page shell (not only .active). In the editor, inactive pages are
+   * display:none for UX; for PDF/print we need all pages in document order.
+   * (Blank page 2 was caused by nested html+body zoom, not by multi-page wrappers.)
+   */
   .canvas-page-wrapper {
     display: block !important;
     page-break-after: avoid !important;
@@ -794,13 +813,20 @@ h6 {
     padding: 0 !important;
   }
 
+  /* Multi-page docs: hard break before each page after the first */
   .canvas-page-wrapper + .canvas-page-wrapper {
-    page-break-before: always;
-    break-before: page;
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+
+  /* Last page: no trailing break that can invent a blank sheet */
+  .canvas-page-wrapper:last-child {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
   }
 
   .canvas-page-wrapper .canvas-page {
-    margin: 0 auto !important;
+    margin: 0 !important;
   }
 
   .canvas-page-wrapper .selection-overlay,
@@ -814,9 +840,18 @@ h6 {
     transform: none !important;
     margin: 0 !important;
     page-break-inside: avoid;
+    /* Contain elements so partial shapes don't paint into a phantom next page */
+    overflow: hidden !important;
   }
 
   .canvas-page-elements {
     overflow: hidden !important;
+  }
+
+  /* Prefer geometric clip for circles under print zoom (border-radius can look squashed) */
+  .canvas-el[data-shapetype="circle"] > div {
+    border-radius: 0 !important;
+    clip-path: circle(50% at 50% 50%) !important;
+    -webkit-clip-path: circle(50% at 50% 50%) !important;
   }
 }
