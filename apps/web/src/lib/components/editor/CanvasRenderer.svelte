@@ -15,7 +15,7 @@
 -->
 
 <script lang="ts">
-  import { canvasStore, snapGuidesStore } from "$lib/stores/document";
+  import { canvasStore } from "$lib/stores/document";
   import type {
     CanvasElement,
     TextElement,
@@ -180,11 +180,12 @@
   }
 
   function onDragStart() {
+    // Undo snapshot only — never set isDragging / store mid-gesture.
+    // Store updates re-render Svelte and used to cancel drag (select-then-drag felt like double-click).
     canvasStore.snapshot();
-    canvasStore.update((s) => ({ ...s, isDragging: true }));
   }
   function onDragEnd() {
-    canvasStore.update((s) => ({ ...s, isDragging: false }));
+    // Position is committed inside use-draggable; nothing else to clear.
   }
 
   // ── Table resize handlers ──
@@ -317,9 +318,8 @@
 
   /**
    * Begin a cell-range selection. Only fires when the table is already selected
-   * (so the first click still selects/moves the table). Suppresses the next
-   * interact.js drag so dragging across cells extends the range instead of
-   * moving the table.
+   * (so the first click still selects/moves the table). Suppresses element drag
+   * so dragging across cells extends the range instead of moving the table.
    */
   function cellMouseDown(e: MouseEvent, tableId: number, row: number, col: number) {
     if (e.button !== 0) return;
@@ -485,9 +485,8 @@
     // When editing text inside a contentEditable child, skip selection
     const elDiv = target.closest(".canvas-el") as HTMLElement | null;
     if (elDiv?.querySelector("[contenteditable='true']")) return;
-    const wasSelected = $canvasStore.selectedIds.includes(elId);
-    // Select first; drag only on a subsequent press on an already-selected element.
-    if (!wasSelected) suppressNextDrag();
+    // Select on press and allow the same gesture to drag (do not suppressNextDrag).
+    // Table cell range selection still calls suppressNextDrag() separately.
     if (e.shiftKey || e.metaKey || e.ctrlKey) {
       toggleSelect(elId);
     } else {
@@ -906,18 +905,19 @@
             aria-hidden="true"
           ></div>
         {/if}
+        <!-- Permanent custom guides only; live snap lines are plain DOM from use-draggable -->
         {#if !readonly}
-          {#each [...($canvasStore.guides ?? []), ...$snapGuidesStore] as g (g.id)}
+          {#each $canvasStore.guides ?? [] as g (g.id)}
             {#if g.orientation === "vertical"}
               <div
                 class="page-guide page-guide-v"
-                style="position:absolute;top:0;bottom:0;left:{g.position}px;width:0;border-left:1px solid {g.id.startsWith('snap-') ? 'var(--color-primary)' : 'color-mix(in srgb, var(--color-text-muted) 55%, transparent)'};pointer-events:none;z-index:9990"
+                style="position:absolute;top:0;bottom:0;left:{g.position}px;width:0;border-left:1px solid color-mix(in srgb, var(--color-text-muted) 55%, transparent);pointer-events:none;z-index:9990"
                 aria-hidden="true"
               ></div>
             {:else}
               <div
                 class="page-guide page-guide-h"
-                style="position:absolute;left:0;right:0;top:{g.position}px;height:0;border-top:1px solid {g.id.startsWith('snap-') ? 'var(--color-primary)' : 'color-mix(in srgb, var(--color-text-muted) 55%, transparent)'};pointer-events:none;z-index:9990"
+                style="position:absolute;left:0;right:0;top:{g.position}px;height:0;border-top:1px solid color-mix(in srgb, var(--color-text-muted) 55%, transparent);pointer-events:none;z-index:9990"
                 aria-hidden="true"
               ></div>
             {/if}
