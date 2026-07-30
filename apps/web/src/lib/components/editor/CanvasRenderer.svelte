@@ -893,7 +893,8 @@
         style="width:{pageDimensions.width}px;height:{pageDimensions.height}px;background:{pageDimensions.bgColor}"
       >
         <!-- Margin guide: thin dashed content-box outline only (no blue wash) -->
-        {#if !readonly && $canvasStore.showMargins !== false}
+        <!-- Visual margin guide only (editor); never exported — snap uses margins even when hidden -->
+        {#if !readonly && $canvasStore.showMargins === true}
           {@const box = contentBox(
             pageDimensions.width,
             pageDimensions.height,
@@ -901,7 +902,7 @@
           )}
           <div
             class="page-margin-overlay"
-            style="position:absolute;left:{box.x}px;top:{box.y}px;width:{box.width}px;height:{box.height}px;pointer-events:none;z-index:0;box-sizing:border-box;border:1px dashed color-mix(in srgb, var(--color-text-muted) 45%, transparent)"
+            style="position:absolute;left:{box.x}px;top:{box.y}px;width:{box.width}px;height:{box.height}px;pointer-events:none;z-index:0;box-sizing:border-box;border:1px dashed color-mix(in srgb, var(--color-text-muted) 35%, transparent)"
             aria-hidden="true"
           ></div>
         {/if}

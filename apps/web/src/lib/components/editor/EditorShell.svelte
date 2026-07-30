@@ -141,7 +141,7 @@
       margins: from?.margins ?? { top: 40, right: 40, bottom: 40, left: 40 },
       guides: from?.guides ?? [],
       chrome: from?.chrome ?? {},
-      showMargins: from?.showMargins ?? true,
+      showMargins: from?.showMargins ?? false,
       snapEnabled: from?.snapEnabled ?? true,
     };
   }

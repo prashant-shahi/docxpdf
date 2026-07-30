@@ -88,7 +88,8 @@ const INITIAL: AppState = {
   margins: { top: 40, right: 40, bottom: 40, left: 40 },
   guides: [],
   chrome: {},
-  showMargins: true,
+  // Overlay is editor-only; off by default (snap still uses margins as invisible barrier)
+  showMargins: false,
   snapEnabled: true,
 };
 

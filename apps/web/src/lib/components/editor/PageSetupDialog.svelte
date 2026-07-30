@@ -34,7 +34,7 @@
     pageBgColor = "#ffffff",
     margins = { top: 40, right: 40, bottom: 40, left: 40 },
     chrome = {} as PageChrome,
-    showMargins = true,
+    showMargins = false,
     snapEnabled = true,
     onclose = () => {},
     onapply = (_v: PageSetupApply) => {},
@@ -262,11 +262,11 @@
           <div class="text-xs font-semibold text-[#333]">Guides</div>
           <label class="flex items-center gap-2 text-sm cursor-pointer">
             <input type="checkbox" bind:checked={localShowMargins} />
-            Show margin overlays
+            Show margin guides (editor only — not printed or exported)
           </label>
           <label class="flex items-center gap-2 text-sm cursor-pointer">
             <input type="checkbox" bind:checked={localSnap} />
-            Snap to margins, centers &amp; elements
+            Snap to margins, centers &amp; elements (invisible barrier when guides hidden)
           </label>
         </div>
       </div>

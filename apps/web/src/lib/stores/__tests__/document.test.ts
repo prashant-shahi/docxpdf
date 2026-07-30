@@ -37,7 +37,7 @@ function defaultState(): AppState {
     margins: { top: 40, right: 40, bottom: 40, left: 40 },
     guides: [],
     chrome: {},
-    showMargins: true,
+    showMargins: false,
     snapEnabled: true,
   };
 }
