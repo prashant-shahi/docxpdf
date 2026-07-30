@@ -509,6 +509,7 @@
       t.classList.contains("canvas-page") ||
       t.classList.contains("canvas-page-elements");
     if (isPageBg) {
+      commitActiveTextEditing();
       deselectAll();
     }
   }
@@ -557,6 +558,9 @@
 
     const pageEl = t.closest(".canvas-page") as HTMLElement | null;
     if (!pageEl) return;
+
+    // preventDefault below blocks the natural contentEditable blur — end edit first.
+    commitActiveTextEditing();
 
     const start = pagePointFromEvent(e, pageEl);
     marqueeDidSelect = false;
@@ -708,6 +712,39 @@
     wrapWithSpan({ color: color });
   }
 
+  /**
+   * Grow the text frame so all content is visible.
+   * Mutates DOM + element height only (no store write) to avoid caret reset.
+   * Height is committed with content on blur.
+   */
+  function fitTextElementHeight(contentEl: HTMLElement, el: TextElement) {
+    const host = contentEl.closest(".canvas-el") as HTMLElement | null;
+    if (!host) return;
+
+    // Measure natural content height without the fixed frame constraint
+    const prevHeight = contentEl.style.height;
+    const prevOverflow = contentEl.style.overflow;
+    contentEl.style.height = "auto";
+    contentEl.style.overflow = "visible";
+    const needed = Math.ceil(contentEl.scrollHeight);
+    contentEl.style.height = prevHeight || "100%";
+    contentEl.style.overflow = prevOverflow || "";
+
+    const fontSize = el.fontSize ?? 16;
+    const minH = Math.max(12, Math.ceil(fontSize * 1.2));
+    const nextH = Math.max(minH, needed);
+    if (Math.abs(nextH - el.height) < 0.5) return;
+
+    el.height = nextH;
+    host.style.height = nextH + "px";
+
+    // Keep selection outline in sync without a store re-render
+    const overlay = host.nextElementSibling as HTMLElement | null;
+    if (overlay?.classList.contains("selection-overlay")) {
+      overlay.style.height = nextH + 4 + "px";
+    }
+  }
+
   function textDblClick(e: MouseEvent, el: TextElement, elId: number) {
     const div = e.currentTarget as HTMLElement;
     // Set contentEditable and focus FIRST so the native double-click
@@ -717,12 +754,40 @@
     editingTextId = elId;
     // Keep the element selected (to preserve outline + property panel)
     // but resize handles are hidden during editing via template check
-    // Scroll the toolbar into view
-    requestAnimationFrame(() =>
+    // Scroll the toolbar into view; grow frame if content already overflows
+    requestAnimationFrame(() => {
+      fitTextElementHeight(div, el);
       document
         .querySelector(".text-formatting-toolbar")
-        ?.scrollIntoView({ behavior: "smooth", block: "nearest" }),
-    );
+        ?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+  }
+
+  /**
+   * Leave text/cell edit mode and persist content.
+   * Needed when outside clicks call preventDefault (marquee) so the
+   * contentEditable never receives a natural blur but selection is cleared.
+   */
+  function commitActiveTextEditing() {
+    const active = document.activeElement as HTMLElement | null;
+    if (active?.closest?.(".canvas-el") && active.isContentEditable) {
+      active.blur();
+    }
+    // Catch orphaned contenteditables that stayed true without focus
+    document
+      .querySelectorAll('.canvas-el [contenteditable="true"]')
+      .forEach((node) => {
+        const el = node as HTMLElement;
+        if (el.isContentEditable) el.blur();
+      });
+    if (editingTextId != null) {
+      editingTextId = null;
+      editingTextRect = null;
+    }
+  }
+
+  function textInput(e: Event, el: TextElement) {
+    fitTextElementHeight(e.currentTarget as HTMLElement, el);
   }
 
   function textBlur(e: FocusEvent, el: TextElement) {
@@ -740,16 +805,40 @@
     ) {
       return;
     }
+    // Final size before leaving edit mode
+    fitTextElementHeight(div, el);
     div.contentEditable = "false";
-    // Save sanitized innerHTML to preserve inline formatting
     const newContent = sanitizeHTML(div.innerHTML || "");
-    if (el.content !== newContent) {
+    const newHeight = el.height;
+    const contentChanged = el.content !== newContent;
+    // Compare against store in case height was only mutated on the live object
+    const storeHeight =
+      Object.values(get(canvasStore).pageElements)
+        .flat()
+        .find((item) => item.id === el.id)?.height ?? el.height;
+    const heightChanged = Math.abs(storeHeight - newHeight) >= 0.5;
+
+    if (contentChanged || heightChanged) {
       canvasStore.snapshot();
       el.content = newContent;
+      el.height = newHeight;
+      canvasStore.update((s) => {
+        const pageKey = String(s.activePage);
+        const els = (s.pageElements[pageKey] || []).map((item) => {
+          if (item.id !== el.id) return item;
+          return {
+            ...structuredClone(item),
+            content: newContent,
+            height: newHeight,
+          };
+        });
+        return { ...s, pageElements: { ...s.pageElements, [pageKey]: els } };
+      });
+    } else {
+      canvasStore.update((s) => ({ ...s }));
     }
     editingTextId = null;
     editingTextRect = null;
-    canvasStore.update((s) => ({ ...s }));
   }
 
   function textKeyDown(e: KeyboardEvent, el: TextElement) {
@@ -770,9 +859,10 @@
       document.execCommand("underline");
       return;
     }
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      div.blur();
+    // Enter inserts a line break (native contentEditable). Escape exits edit mode.
+    if (e.key === "Enter") {
+      // Grow after the browser inserts the line break
+      requestAnimationFrame(() => fitTextElementHeight(div, el));
     }
     if (e.key === "Escape") {
       e.preventDefault();
@@ -993,11 +1083,12 @@
                     : (el as any).strikethrough
                       ? 'line-through'
                       : 'none'};text-align:{(el as TextElement).textAlign ||
-                    'left'};width:100%;height:100%;outline:none;overflow:hidden;word-wrap:break-word;line-height:normal"
+                    'left'};width:100%;height:100%;outline:none;overflow:hidden;word-wrap:break-word;line-height:normal;box-sizing:border-box"
                   ondblclick={(e) =>
                     !readonly && textDblClick(e, el as TextElement, el.id)}
                   onblur={(e) => textBlur(e, el as TextElement)}
                   onkeydown={(e) => textKeyDown(e, el as TextElement)}
+                  oninput={(e) => !readonly && textInput(e, el as TextElement)}
                 >
                   {@html renderTextContent((el as TextElement).content || "")}
                 </div>
