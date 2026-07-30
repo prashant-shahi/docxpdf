@@ -105,16 +105,45 @@
   let hasUnsavedChanges = $state(false);
   let savedJson = $state("");
 
+  /** Fingerprint includes elements + page chrome/margins (not UI-only snap lines). */
+  function documentFingerprint(s: typeof $canvasStore): string {
+    return JSON.stringify({
+      pageElements: s.pageElements,
+      pageLayout: s.pageLayout,
+      nextId: s.nextId,
+      margins: s.margins,
+      guides: s.guides,
+      chrome: s.chrome,
+    });
+  }
+
   $effect(() => {
-    const json = JSON.stringify($canvasStore.pageElements);
+    const json = documentFingerprint($canvasStore);
     // Only consider unsaved after initial state is captured (savedJson non-empty)
     hasUnsavedChanges = savedJson !== "" && json !== savedJson;
   });
 
   /** Mark the current canvas state as "saved" — clears unsaved flag. */
   function markSaved() {
-    savedJson = JSON.stringify($canvasStore.pageElements);
+    savedJson = documentFingerprint($canvasStore);
     hasUnsavedChanges = false;
+  }
+
+  /** Defaults for P1 layout fields (margins / guides / chrome / UI prefs). */
+  function p1LayoutDefaults(from?: {
+    margins?: typeof $canvasStore.margins;
+    guides?: typeof $canvasStore.guides;
+    chrome?: typeof $canvasStore.chrome;
+    showMargins?: boolean;
+    snapEnabled?: boolean;
+  }) {
+    return {
+      margins: from?.margins ?? { top: 40, right: 40, bottom: 40, left: 40 },
+      guides: from?.guides ?? [],
+      chrome: from?.chrome ?? {},
+      showMargins: from?.showMargins ?? true,
+      snapEnabled: from?.snapEnabled ?? true,
+    };
   }
 
   /** Persistable document fields (P1 chrome / margins / guides included). */
@@ -185,12 +214,7 @@
         redoStack: [],
         activePage: 0,
         pageCount: 1,
-        margins: { top: 40, right: 40, bottom: 40, left: 40 },
-        guides: [],
-        chrome: {},
-        showMargins: true,
-        snapEnabled: true,
-        activeSnapGuides: [],
+        ...p1LayoutDefaults(),
       });
 
       const urlParams = new URLSearchParams(window.location.search);
@@ -258,17 +282,11 @@
                   redoStack: [],
                   activePage: 0,
                   pageCount: Math.max(1, Object.keys(pageElements).length),
-                  margins: docData.margins ?? {
-                    top: 40,
-                    right: 40,
-                    bottom: 40,
-                    left: 40,
-                  },
-                  guides: docData.guides ?? [],
-                  chrome: docData.chrome ?? {},
-                  showMargins: true,
-                  snapEnabled: true,
-                  activeSnapGuides: [],
+                  ...p1LayoutDefaults({
+                    margins: docData.margins,
+                    guides: docData.guides,
+                    chrome: docData.chrome,
+                  }),
                 });
                 markSaved();
               });
@@ -618,6 +636,11 @@
         undoStack: [], redoStack: [],
         activePage: 0,
         pageCount: Object.keys(t.data.pageElements).length,
+        ...p1LayoutDefaults({
+          margins: (t.data as any).margins,
+          guides: (t.data as any).guides,
+          chrome: (t.data as any).chrome,
+        }),
       });
     } else {
       // Single-page template
@@ -632,6 +655,11 @@
         selectedIds: [], isDragging: false,
         undoStack: [], redoStack: [],
         activePage: 0, pageCount: 1,
+        ...p1LayoutDefaults({
+          margins: (t.data as any).margins,
+          guides: (t.data as any).guides,
+          chrome: (t.data as any).chrome,
+        }),
       });
     }
     setPageSize(size, orientation, bgColor);

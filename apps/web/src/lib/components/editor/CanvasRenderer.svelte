@@ -15,7 +15,7 @@
 -->
 
 <script lang="ts">
-  import { canvasStore } from "$lib/stores/document";
+  import { canvasStore, snapGuidesStore } from "$lib/stores/document";
   import type {
     CanvasElement,
     TextElement,
@@ -36,7 +36,7 @@
     shapeLabel,
     selectionOutlineRadius,
   } from "$lib/core/shapes";
-  import { resolveChromeTokens } from "@docxpdf/engine";
+  import { contentBox, resolveChromeTokens } from "@docxpdf/engine";
 
   let {
     editingTextId = $bindable(null),
@@ -892,27 +892,31 @@
         class="canvas-page bg-white relative shadow-[0_2px_12px_rgba(0,0,0,0.12),0_1px_4px_rgba(0,0,0,0.08)] flex-shrink-0"
         style="width:{pageDimensions.width}px;height:{pageDimensions.height}px;background:{pageDimensions.bgColor}"
       >
-        <!-- Margin / guide overlays (editor only) -->
+        <!-- Margin guide: thin dashed content-box outline only (no blue wash) -->
         {#if !readonly && $canvasStore.showMargins !== false}
-          {@const m = $canvasStore.margins ?? { top: 40, right: 40, bottom: 40, left: 40 }}
+          {@const box = contentBox(
+            pageDimensions.width,
+            pageDimensions.height,
+            $canvasStore.margins,
+          )}
           <div
             class="page-margin-overlay"
-            style="position:absolute;inset:0;pointer-events:none;z-index:0;box-shadow:inset {m.left}px {m.top}px 0 0 rgba(22,119,255,0.06), inset -{m.right}px -{m.bottom}px 0 0 rgba(22,119,255,0.06);border:1px dashed rgba(22,119,255,0.35);border-width:{m.top}px {m.right}px {m.bottom}px {m.left}px;box-sizing:border-box"
+            style="position:absolute;left:{box.x}px;top:{box.y}px;width:{box.width}px;height:{box.height}px;pointer-events:none;z-index:0;box-sizing:border-box;border:1px dashed color-mix(in srgb, var(--color-text-muted) 45%, transparent)"
             aria-hidden="true"
           ></div>
         {/if}
         {#if !readonly}
-          {#each [...($canvasStore.guides ?? []), ...($canvasStore.activeSnapGuides ?? [])] as g (g.id)}
+          {#each [...($canvasStore.guides ?? []), ...$snapGuidesStore] as g (g.id)}
             {#if g.orientation === "vertical"}
               <div
                 class="page-guide page-guide-v"
-                style="position:absolute;top:0;bottom:0;left:{g.position}px;width:0;border-left:1px solid {g.id.startsWith('snap-') ? 'var(--color-primary)' : 'rgba(255,64,129,0.75)'};pointer-events:none;z-index:9990"
+                style="position:absolute;top:0;bottom:0;left:{g.position}px;width:0;border-left:1px solid {g.id.startsWith('snap-') ? 'var(--color-primary)' : 'color-mix(in srgb, var(--color-text-muted) 55%, transparent)'};pointer-events:none;z-index:9990"
                 aria-hidden="true"
               ></div>
             {:else}
               <div
                 class="page-guide page-guide-h"
-                style="position:absolute;left:0;right:0;top:{g.position}px;height:0;border-top:1px solid {g.id.startsWith('snap-') ? 'var(--color-primary)' : 'rgba(255,64,129,0.75)'};pointer-events:none;z-index:9990"
+                style="position:absolute;left:0;right:0;top:{g.position}px;height:0;border-top:1px solid {g.id.startsWith('snap-') ? 'var(--color-primary)' : 'color-mix(in srgb, var(--color-text-muted) 55%, transparent)'};pointer-events:none;z-index:9990"
                 aria-hidden="true"
               ></div>
             {/if}

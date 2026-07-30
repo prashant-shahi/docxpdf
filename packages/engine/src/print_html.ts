@@ -29,11 +29,12 @@ function renderChromeHtml(
   pageH: number,
   pageIndex: number,
   pageCount: number,
+  title?: string,
 ): string {
   const resolved = resolvePageChrome(
     state.chrome,
     pageH,
-    { pageIndex, pageCount, title: undefined },
+    { pageIndex, pageCount, title },
     state.margins,
   );
   let html = "";
@@ -47,6 +48,8 @@ function renderChromeHtml(
 }
 
 export interface BuildPrintHtmlOptions {
+  /** Document title for {{title}} chrome tokens. */
+  title?: string;
   resolveImageSrc?: (
     el: CanvasElement & { imageId?: string; src?: string },
   ) => Promise<string | null>;
@@ -141,13 +144,17 @@ export function elementToHtml(el: CanvasElement, src?: string | null): string {
 }
 
 /** Build print-ready HTML for all pages (sync; images must already have src). */
-export function buildPrintHtml(state: CanvasDocumentState): string {
-  return buildPrintHtmlSync(state);
+export function buildPrintHtml(
+  state: CanvasDocumentState,
+  options: BuildPrintHtmlOptions = {},
+): string {
+  return buildPrintHtmlSync(state, new Map(), options);
 }
 
 function buildPrintHtmlSync(
   state: CanvasDocumentState,
   resolved = new Map<number, string>(),
+  options: BuildPrintHtmlOptions = {},
 ): string {
   const layout = state.pageLayout;
   const size = PAGE_SIZES[layout.size] ?? PAGE_SIZES.a4;
@@ -168,7 +175,14 @@ function buildPrintHtmlSync(
           elementToHtml(el, el.type === "image" ? resolved.get(el.id) ?? el.src : undefined),
         )
         .join("\n");
-      const chromeHtml = renderChromeHtml(state, pw, ph, pageIndex, pageCount);
+      const chromeHtml = renderChromeHtml(
+        state,
+        pw,
+        ph,
+        pageIndex,
+        pageCount,
+        options.title,
+      );
       return `<div class="page" style="width:${pw}px;height:${ph}px;background:${bg}">${chromeHtml}${body}</div>`;
     })
     .join("");
@@ -197,5 +211,5 @@ export async function buildPrintHtmlAsync(
       }
     }
   }
-  return buildPrintHtmlSync(state, resolved);
+  return buildPrintHtmlSync(state, resolved, options);
 }

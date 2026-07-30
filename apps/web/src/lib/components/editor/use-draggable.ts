@@ -17,7 +17,7 @@
 import interact from "interactjs";
 import type { CanvasElement, ShapeElement } from "$lib/types/global";
 import { selectionOutlineRadius } from "$lib/core/shapes";
-import { canvasStore } from "$lib/stores/document";
+import { canvasStore, snapGuidesStore } from "$lib/stores/document";
 import { getCanvasPageScale } from "$lib/core/document";
 import {
   collectSnapTargets,
@@ -170,10 +170,7 @@ export function draggable(node: HTMLElement, params: DragParams) {
           );
           nx = snapped.x;
           ny = snapped.y;
-          canvasStore.update((s) => ({
-            ...s,
-            activeSnapGuides: snapped.activeGuides,
-          }));
+          snapGuidesStore.set(snapped.activeGuides);
         }
         el.x = nx;
         el.y = ny;
@@ -187,7 +184,12 @@ export function draggable(node: HTMLElement, params: DragParams) {
         params.onMove?.();
       },
       end() {
-        if (ignoreDrag) { ignoreDrag = false; cleanGuide(); return; }
+        if (ignoreDrag) {
+          ignoreDrag = false;
+          cleanGuide();
+          snapGuidesStore.set([]);
+          return;
+        }
         cleanGuide();
         const scale = getCanvasPageScale(node);
         let finalX = startElX + totalDx / scale;
@@ -224,6 +226,7 @@ export function draggable(node: HTMLElement, params: DragParams) {
           finalX = snapped.x;
           finalY = snapped.y;
         }
+        snapGuidesStore.set([]);
         const id = el.id;
         canvasStore.update((s) => {
           const pageKey = String(s.activePage);
@@ -234,7 +237,6 @@ export function draggable(node: HTMLElement, params: DragParams) {
           return {
             ...s,
             pageElements: { ...s.pageElements, [pageKey]: els },
-            activeSnapGuides: [],
           };
         });
         el.x = finalX;

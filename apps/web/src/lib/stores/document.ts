@@ -88,10 +88,17 @@ const INITIAL: AppState = {
   margins: { top: 40, right: 40, bottom: 40, left: 40 },
   guides: [],
   chrome: {},
-  activeSnapGuides: [],
   showMargins: true,
   snapEnabled: true,
 };
+
+/**
+ * Live snap guide lines while dragging — separate from canvasStore so pointer
+ * moves do not re-run document dirty fingerprinting / full editor reactivity.
+ */
+export const snapGuidesStore = writable<
+  import("$lib/types/global").GuideLine[]
+>([]);
 
 /** Deep-clone pageElements quickly. */
 function clonePE(pe: Record<string, CanvasElement[]>): Record<string, CanvasElement[]> {

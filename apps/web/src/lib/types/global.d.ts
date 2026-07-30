@@ -121,8 +121,6 @@ export interface AppState {
   guides?: GuideLine[];
   /** Headers / footers / page numbers (P1). */
   chrome?: PageChrome;
-  /** Live snap guides while dragging (UI-only, not persisted). */
-  activeSnapGuides?: GuideLine[];
   /** Show margin overlays (UI preference). */
   showMargins?: boolean;
   /** Snap to guides/margins/elements while dragging. */
