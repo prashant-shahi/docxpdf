@@ -166,7 +166,7 @@ const CANVAS_PAD_X = 48;
 const CANVAS_PAD_Y = 24;
 const ZOOM_STORAGE_KEY = "docxpdf-canvas-zoom";
 
-let _zoomMode: CanvasZoomMode = 1;
+let _zoomMode: CanvasZoomMode = "fit";
 let _lastAppliedScale = 1;
 
 function isZoomPreset(n: number): n is CanvasZoomPreset {
