@@ -164,6 +164,7 @@ export type CanvasZoomMode = "fit" | CanvasZoomPreset;
 
 const CANVAS_PAD_X = 48;
 const CANVAS_PAD_Y = 24;
+/** Legacy key — cleared on init; zoom is session-only and always starts at Fit. */
 const ZOOM_STORAGE_KEY = "docxpdf-canvas-zoom";
 
 let _zoomMode: CanvasZoomMode = "fit";
@@ -173,16 +174,15 @@ function isZoomPreset(n: number): n is CanvasZoomPreset {
   return (CANVAS_ZOOM_PRESETS as readonly number[]).includes(n);
 }
 
-/** Load persisted zoom preference (call once when the editor mounts). */
+/**
+ * Reset canvas zoom to Fit for this editor open.
+ * Not persisted across documents or reloads (zoom is per session only).
+ */
 export function initCanvasZoom(): void {
+  _zoomMode = "fit";
+  _lastAppliedScale = 1;
   try {
-    const saved = localStorage.getItem(ZOOM_STORAGE_KEY);
-    if (saved === "fit") {
-      _zoomMode = "fit";
-    } else if (saved) {
-      const n = parseFloat(saved);
-      if (isZoomPreset(n)) _zoomMode = n;
-    }
+    localStorage.removeItem(ZOOM_STORAGE_KEY);
   } catch {
     // ignore
   }
@@ -198,14 +198,7 @@ export function getAppliedCanvasScale(): number {
 
 export function setCanvasZoomMode(mode: CanvasZoomMode): void {
   _zoomMode = mode;
-  try {
-    localStorage.setItem(
-      ZOOM_STORAGE_KEY,
-      mode === "fit" ? "fit" : String(mode),
-    );
-  } catch {
-    // ignore
-  }
+  // Intentionally not written to localStorage — every document opens at Fit.
   applyCanvasScale();
 }
 
