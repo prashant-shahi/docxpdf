@@ -135,7 +135,8 @@ function getPageEl(pageKey: string): HTMLElement | null {
  * Why not interact: selecting on the same mousedown re-renders Svelte (selection
  * chrome, property panel). That often cancels interact's in-flight gesture, so
  * users had to click again ("double-click to move") and even that was flaky.
- * setPointerCapture keeps the gesture alive across those re-renders.
+ * We track move/up on window and only setPointerCapture after the drag threshold
+ * so click/dblclick still reach text cells for edit-on-double-click.
  */
 export function draggable(node: HTMLElement, params: DragParams) {
   if (params.disabled) {
@@ -200,12 +201,22 @@ export function draggable(node: HTMLElement, params: DragParams) {
     releaseCapture();
   }
 
-  function beginDrag() {
+  function beginDrag(capturePointerId: number | null) {
     dragging = true;
     startElX = el.x;
     startElY = el.y;
     lastX = startElX;
     lastY = startElY;
+
+    // Capture only once this is a real drag. Capturing on every pointerdown
+    // retargets click/dblclick to the shell and breaks text/table edit-on-double-click.
+    if (capturePointerId != null) {
+      try {
+        node.setPointerCapture(capturePointerId);
+      } catch {
+        /* ignore */
+      }
+    }
 
     const state = get(canvasStore);
     if (state.snapEnabled !== false) {
@@ -306,13 +317,8 @@ export function draggable(node: HTMLElement, params: DragParams) {
     lastX = el.x;
     lastY = el.y;
 
-    // Survive Svelte re-renders from select-on-press (selection chrome, etc.).
-    try {
-      node.setPointerCapture(e.pointerId);
-    } catch {
-      /* ignore */
-    }
-
+    // Window listeners track the gesture without pointer capture so click/dblclick
+    // still target .text-content / table cells. Capture starts in beginDrag only.
     window.addEventListener("pointermove", onPointerMove);
     window.addEventListener("pointerup", onPointerUp);
     window.addEventListener("pointercancel", onPointerUp);
@@ -332,7 +338,7 @@ export function draggable(node: HTMLElement, params: DragParams) {
       const dx = e.clientX - startClientX;
       const dy = e.clientY - startClientY;
       if (dx * dx + dy * dy < DRAG_THRESHOLD_PX * DRAG_THRESHOLD_PX) return;
-      beginDrag();
+      beginDrag(pointerId);
     }
 
     e.preventDefault();
