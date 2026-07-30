@@ -30,8 +30,11 @@
   import { updateImageMeta } from "$lib/utils/db";
   import AISettings from "./AISettings.svelte";
   import AttachImagesDialog from "./AttachImagesDialog.svelte";
+  import GeneratingOverlay from "./GeneratingOverlay.svelte";
   import { showToast } from "$lib/utils/helpers";
-  import type { NormalizedAIDocument } from "@docxpdf/engine";
+  import { canvasStore } from "$lib/stores/document";
+  import type { NormalizedAIDocument, PageSize } from "@docxpdf/engine";
+  import { get } from "svelte/store";
 
   let {
     show = false,
@@ -49,10 +52,16 @@
   let showSettings = $state(false);
   let showAttach = $state(false);
   let attached = $state<AttachedImage[]>([]);
+  let pageSize = $state<string>("a4");
+  let pageOrientation = $state<"portrait" | "landscape">("portrait");
 
   $effect(() => {
     if (show) {
       error = "";
+      const layout = get(canvasStore).pageLayout;
+      pageSize = layout?.size || "a4";
+      pageOrientation =
+        layout?.orientation === "landscape" ? "landscape" : "portrait";
     }
   });
 
@@ -102,6 +111,10 @@
 
       const doc = await generateDocument(prompt, {
         allowMultiPage: true,
+        pageLayout: {
+          size: pageSize as PageSize,
+          orientation: pageOrientation,
+        },
         images: attached.map((a) => ({
           imageId: a.imageId,
           title: a.title,
@@ -163,6 +176,38 @@
           Describe any document. AI builds an editable canvas layout using
           <strong>your API key</strong> — nothing is sent to DOCxPDF servers.
         </p>
+
+        <div class="page-setup-row">
+          <label class="page-field">
+            <span class="page-field-label">Page size</span>
+            <select
+              bind:value={pageSize}
+              disabled={generating}
+              class="page-select"
+            >
+              <option value="a6">A6</option>
+              <option value="a5">A5</option>
+              <option value="a4">A4</option>
+              <option value="a3">A3</option>
+              <option value="b5">B5</option>
+              <option value="letter">Letter</option>
+              <option value="legal">Legal</option>
+              <option value="executive">Executive</option>
+              <option value="tabloid">Tabloid</option>
+            </select>
+          </label>
+          <label class="page-field">
+            <span class="page-field-label">Orientation</span>
+            <select
+              bind:value={pageOrientation}
+              disabled={generating}
+              class="page-select"
+            >
+              <option value="portrait">Portrait</option>
+              <option value="landscape">Landscape</option>
+            </select>
+          </label>
+        </div>
 
         <div class="flex items-center justify-between gap-2">
           <span class="text-xs font-semibold" style="color: var(--color-text-muted);"
@@ -290,6 +335,8 @@
   </div>
 {/if}
 
+<GeneratingOverlay show={generating} />
+
 <AISettings open={showSettings} onclose={() => (showSettings = false)} />
 <AttachImagesDialog
   show={showAttach}
@@ -298,6 +345,38 @@
 />
 
 <style>
+  .page-setup-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .page-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .page-field-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+
+  .page-select {
+    width: 100%;
+    font-size: 13px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+    color: var(--color-text);
+  }
+
+  .page-select:disabled {
+    opacity: 0.6;
+  }
+
   .attach-gallery {
     display: flex;
     gap: 10px;

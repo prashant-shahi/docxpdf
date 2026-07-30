@@ -18,7 +18,7 @@
 //  ai_document.ts — Parse & normalize AI-generated canvas docs
 // ═══════════════════════════════════════════════════════════
 
-import { PAGE_SIZES } from "./constants";
+import { PAGE_SIZES, PAGE_SIZES_MM } from "./constants";
 import { CURRENT_VERSION } from "./migrate";
 import { SHAPE_BY_TYPE } from "./shapes";
 import { estimateTextHeight } from "./text_measure";
@@ -617,6 +617,44 @@ export interface NormalizeAIDocumentOptions {
   allowMultiPage?: boolean;
   /** Attached library images the model may place. */
   imageCatalog?: AIImageCatalogEntry[];
+  /**
+   * When set, force page.size / page.orientation (user-selected at generate time).
+   * Layout is normalized to this canvas regardless of model output.
+   */
+  forcedPageLayout?: {
+    size: PageSize;
+    orientation: "portrait" | "landscape";
+  };
+}
+
+/**
+ * Prompt block: page size, orientation, CSS pixel box, physical mm, and 96 DPI note.
+ * Instructs the model to use this layout only.
+ */
+export function formatPageLayoutForAIPrompt(layout: {
+  size: string;
+  orientation?: "portrait" | "landscape";
+}): string {
+  let size = (layout.size || "a4").toLowerCase();
+  if (!VALID_PAGE_SIZES.has(size)) size = "a4";
+  const orientation =
+    layout.orientation === "landscape" ? "landscape" : "portrait";
+  const base = PAGE_SIZES[size] ?? PAGE_SIZES.a4;
+  const mm = PAGE_SIZES_MM[size] ?? PAGE_SIZES_MM.a4;
+  const w = orientation === "landscape" ? base.height : base.width;
+  const h = orientation === "landscape" ? base.width : base.height;
+  const mmW = orientation === "landscape" ? mm.height : mm.width;
+  const mmH = orientation === "landscape" ? mm.width : mm.height;
+
+  return (
+    `\n\nPage layout constraint (MUST use this — do not change size or orientation):\n` +
+    `- size: "${size}"\n` +
+    `- orientation: "${orientation}"\n` +
+    `- canvas CSS pixels (screen): ${w}×${h} — place every element inside this box; origin top-left (0,0)\n` +
+    `- physical page: ${mmW}×${mmH} mm\n` +
+    `- DPI / mapping: layout uses CSS pixels at 96 DPI (1 CSS px = 1/96 in). Print maps this box to the physical ${size.toUpperCase()} page. Design for the ${w}×${h} px canvas so on-screen and printed proportions match.\n` +
+    `- In your JSON, page.size and page.orientation MUST be exactly "${size}" and "${orientation}".\n`
+  );
 }
 
 /**
@@ -660,8 +698,17 @@ export function normalizeAIDocument(
 
   let size = asString(pageObj.size, "a4").toLowerCase() as PageSize;
   if (!VALID_PAGE_SIZES.has(size)) size = "a4";
-  const orientation =
+  let orientation: "portrait" | "landscape" =
     pageObj.orientation === "landscape" ? "landscape" : "portrait";
+  // User-selected page setup wins over model output
+  if (options.forcedPageLayout) {
+    const forcedSize = options.forcedPageLayout.size;
+    if (VALID_PAGE_SIZES.has(forcedSize)) size = forcedSize;
+    orientation =
+      options.forcedPageLayout.orientation === "landscape"
+        ? "landscape"
+        : "portrait";
+  }
   let bgColor = safeColor(pageObj.bgColor, "#ffffff");
   const { width: pageW, height: pageH } = pageDims(size, orientation);
 
