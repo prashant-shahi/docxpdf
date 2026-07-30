@@ -251,7 +251,7 @@
           {#if footerEnabled}
             <input
               type="text"
-              placeholder="e.g. {{page}} or Page {{page}} of {{pages}}"
+              placeholder={'e.g. {{page}} or Page {{page}} of {{pages}}'}
               bind:value={footerCenter}
               class="w-full px-2.5 py-2 text-sm border border-[#d0d5dd] rounded-lg"
             />
