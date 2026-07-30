@@ -181,6 +181,21 @@
         { label: "Ungroup", action: "ungroup", icon: "🔹" },
       ],
     },
+    view: {
+      label: "View",
+      options: [
+        {
+          label: "Show Margins",
+          action: "toggle-margins",
+          icon: "▭",
+        },
+        {
+          label: "Snap to Guides",
+          action: "toggle-snap",
+          icon: "⊞",
+        },
+      ],
+    },
   };
 
   // ── Reactively track undo state from canvas store ──
@@ -246,6 +261,18 @@
         break;
       case "page-setup":
         onPageSetup?.();
+        break;
+      case "toggle-margins":
+        canvasStore.update((s) => ({
+          ...s,
+          showMargins: !(s.showMargins === true),
+        }));
+        break;
+      case "toggle-snap":
+        canvasStore.update((s) => ({
+          ...s,
+          snapEnabled: s.snapEnabled === false ? true : false,
+        }));
         break;
       case "version-history":
         onVersionHistory?.();
@@ -415,7 +442,13 @@
                 >
                   <span class="menubar-option-left">
                     {opt.icon}
-                    {opt.label}
+                    {#if opt.action === "toggle-margins"}
+                      {$canvasStore.showMargins === true ? "✓ " : ""}Show Margins
+                    {:else if opt.action === "toggle-snap"}
+                      {$canvasStore.snapEnabled !== false ? "✓ " : ""}Snap to Guides
+                    {:else}
+                      {opt.label}
+                    {/if}
                     {#if opt.action === "add-table"}
                       <span class="beta-badge">Beta</span>
                     {/if}
