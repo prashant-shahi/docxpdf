@@ -44,7 +44,7 @@
     },
     "dependencies": {
         "@docxpdf/engine": "workspace:*",
-        "interactjs": "^1.10.27",
+        "interactjs": "^1.10.28",
         "jszip": "^3.10.1"
     }
 }
