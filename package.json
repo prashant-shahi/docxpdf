@@ -7,7 +7,7 @@
     "dev": "npx wrangler dev"
   },
   "dependencies": {
-    "wrangler": "^4.115.0"
+    "wrangler": "^4.118.0"
   },
   "pnpm": {
     "overrides": {
