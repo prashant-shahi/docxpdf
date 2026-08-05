@@ -17,7 +17,7 @@
         "jszip": "^3.10.1"
     },
     "devDependencies": {
-        "typescript": "~6.0.2",
+        "typescript": "~7.0.2",
         "vitest": "^4.1.10"
     }
 }
