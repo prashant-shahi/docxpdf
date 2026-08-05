@@ -40,7 +40,7 @@
         "typescript": "~6.0.2",
         "vite": "^8.1.5",
         "vitest": "^3.2.6",
-        "wrangler": "^4.115.0"
+        "wrangler": "^4.118.0"
     },
     "dependencies": {
         "@docxpdf/engine": "workspace:*",
